@@ -1,0 +1,796 @@
+% preamble
+\documentclass{article}
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\setlength{\headheight}{12pt}
+\usepackage[headsep=1cm,total={6.5in, 8.5in}]{geometry}
+
+% useful packages
+\usepackage{amsmath,amssymb, amsthm}
+
+% add your own packages here
+\usepackage{verbatim}
+% \usepackage[style=verbose]{biblatex}
+\usepackage{enumitem}
+
+\usepackage{tikz}
+% \usepackage{filecontents}
+% \begin{filecontents}{myreferences.bib}
+%     @online{foo12,
+%       year = {2012},
+%       title = {footnote-reference-using-european-system},
+%       url = {http://tex.stackexchange.com/questions/69716/footnote-reference-using-european-system},
+%     }
+% \end{filecontents}
+
+% % Save the bib to disk (or update it).
+% \addbibresource{myreferences.bib}
+
+% commands for header, fill in the appropriate values
+\newcommand{\codename}	{Snoop Matroidd} % type name here
+\newcommand{\settitle}	{Set 6} %type set title here (ex. Problem Set 3, Midterm)
+\newcommand{\latesub}	{No} % type yes/no indicating late submission
+
+% a few helpful commands 
+\newcommand{\RR}{\mathbb{R}} % typing \RR prints the Blackboard R used for Real Numbers
+\newcommand{\NN}{\mathbb{N}} % typing \NN prints the Blackboard N used for Natural Numbers
+\newcommand{\ZZ}{\mathbb{Z}} % typing \ZZ prints the Blackboard Z used for Integers
+
+% construct your own commands here
+
+\newcommand{\GCD}{\textrm{GCD}}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+
+% commands for header, don't adjust
+\begin{document}
+\thispagestyle{empty}
+\begin{center}
+      \framebox[6.5in]{
+            \vbox{
+                  \vspace{2mm}
+                  \makebox[6.3in][l]{\textbf{CS~38~~~Algorithms}\hfill \textbf{\today}}
+                  \vspace{4mm}
+                  \makebox[6.5in][c] {\Large \hfill \settitle{\hfill}}
+                  \vspace{2mm}
+                  \makebox[6.3in][l] {\textbf{Codename: } \codename{ \hfill \textbf{Late Submission:}
+                              \latesub}}
+                  \vspace{2mm}
+            }
+      }
+\end{center}
+\vspace*{1mm}
+\pagestyle{fancy}\lhead{Codename: \codename} \chead{\settitle}
+\rhead{\today}
+
+% insert solution here
+\section{Problem 1 (6 points)}
+Collaborated with: No One
+
+\subsection{Proposition}
+
+\paragraph{}
+Give an \(O(nm)\)-time algorithm which on input a weighted directed graph, either reports
+that there is no negative-weight cycle or provides such a cycle as output.
+
+\subsubsection{Algorithm}
+\begin{enumerate}
+      \item Our algorithm takes as input a weighted directed graph \(G = (V, E)\).
+      \item Construct 3 arrays of length \(n=|V|\), \(K(v), U(v), P(v)\).
+      \item Let \(K(v)\) be the array element with the weight of the path
+            with the least cumulative weight to vertex \(v\) from some vertex the algorithm has
+            encountered already. Initialize \(K(v)\) initially to 0.
+      \item Let \(U(v)\) be the counter counting the iteration number at which \(K(v)\)
+            was most recently changed. Initialize \(U(v)\) to -1.
+      \item Let \(P(v)\) be a pointer to front of a singly linked list of vertices that
+            follow the least cumulative weight path that leads to vertex \(v\). Initialize \(P(v)\)
+            initially to the head of a singly linked list that only contains \(v\).
+      \item Let \(L\) be the current loop count and initialize it to \(L=0\).
+      \item Loop the following, break when the \(K()\) array is unchanged after a loop.
+            \begin{enumerate}
+                  \item If \(L = n = |V|\), then jump to \(\text{LeastWeight}()\).
+                  \item For every edge \(e = (x, y) \in E \), let \(z = K(x) +
+                        \text{Weight}(x,y)\). If \(z < K(y)\), then update \(K(y)\) to \(K(y) = z\),
+                        and append a node to \(P(x)\) for vertex \(b\) to the front of the singly
+                        linked list. Set \(U(y)\) to \(L\) as we updated list in this loop.
+                  \item Increment the loop counter \(L = L + 1\).
+            \end{enumerate}
+      \item If the loop was broken out of by a lack of updates to the array \(K\) in less
+            than \(n\) iterations, then return False, there aren't any negative weight cycles in
+            graph \(G\).
+      \item If the loop wasn't broken out of then proceed to \(\text{LeastWeight}()\) to get the
+            negative weight cycle and return True.
+      \item Let \(\text{LeastWeight}()\) be a subroutine that iterates over all vertices \(v\in V\)
+            until finding one for which \(U(v) = n - 1\). \begin{enumerate}
+                  \item Construct the cycle by going to the head of the singly linked list at
+                        \(P(v)\), and popping the vertices \(y\) and \(x\) from it, and then adding
+                        \((y,x)\) to a new linked list, \(P^{\prime}\) to reverse the traced route to \(v\).
+                  \item Add edges to \(P^{\prime}\) until there is a repeated vertex for \(y\),
+                        and then iterate over \(P^{\prime}\) and remove all edges before \(y\)'s first
+                        appearance.
+                  \item Return \(P^{\prime}\), a negative weight cycle.
+            \end{enumerate}
+      \item If we called \(\text{LeastWeight}()\) than we have the negative weight cycle and can
+            return True along with the cycle.
+\end{enumerate}
+
+\subsubsection{Proof of Correctness}
+\begin{proof} This algorithm correctly returns a negative weight cycle if one exists.
+      \begin{enumerate}
+            \item The weight of the least weight path to reach a vertex \(v\) is at most
+                  \(K(v)\). The distance from any vertex to itself is defined to be 0.
+            \item We only ever update the value at \(K(v)\) if we come across a edge to a
+                  prior vertex that lowers the cumulative weight of the route that leads to
+                  \(v\).
+            \item Since we are using a singly linked list data structure, we only end up
+                  storing routes with the least weight where in the the vertex in question is a
+                  leaf in a tree.
+            \item Therefore the route leading to vertex \(v\) will have weight \(k\),
+                  where \(K(v)\) will be the shortest edge-wise route from any one vertex
+                  to \(v\) upon reaching the \(k\)'th loop.
+            \item If the graph \(G\) has no negative weight cycles, then by loop \(n-1\)
+                  the array \(K(v)\) will no longer update, and the longest possible length for
+                  a route without a cycle is bounded by \(n-1\).
+            \item If the graph \(G\) does contain a negative weight cycle, then by the
+                  \(n\)th loop we will be able to return a vertex \(v\) that has a decreasing
+                  value at \(K(v)\).
+            \item The reason for the above statement is because each time we follow a
+                  cycling route, we will decrease the key of some vertex at each iteration.
+            \item Every vertex that is also not in in a cycle, but is still decreasing its
+                  \(K(v)\) has to be decreasing because thewre is a route that is at least \(n\)
+                  verticles long that leading to it, and therefore must contain a cycle per the
+                  aforementioned restriction on the length of non-cyclical routes.
+            \item From a vertex with a decreasing \(K(v)\) we then follow the reversed
+                  route to find the cycle.
+            \item The cycle will not have a positive weight as any vertex in the cycle
+                  must have its value for \(K(v)\) decreased by only adding weights that are
+                  lesser than the weight from the non-negative cycle.
+            \item By the time we reach the \(n\)th loop, the weights may not decrease
+                  which indicates there is no negative weight cycle to be found in \(G\) and we
+                  return this result.
+            \item Therefore the algorithm returns a valid negative weight cycle if and
+                  only if one exists in \(G\) and returns False otherwise.
+      \end{enumerate}
+\end{proof}
+
+\subsubsection{Complexity Analysis}
+\begin{proof} This algorithm runs in \(O(nm)\)
+      \begin{enumerate}
+            \item The algorithm does at most \(n = |V|\) iterations within a loop for each edge \(m = |E|\).
+            \item At each edge the algorithm does a constant amount of steps to calculate \(c\), and then a
+                  constant amount of steps to perform the comparison with \(K(b)\), and to perform
+                  \(U(b)\), and finally returning the new linked list constructed by appending a single
+                  element to the front of the old singly linked list.
+            \item Therefore the first loop of the algorithm runs in \(O(nm * constant)\) time, or just \(O(nm)\).
+            \item The algorithm short circuits to return we didn't find any negative weight
+                  cycles, which takes constant time.
+            \item If there was a cycle found, then the algorithm computes in \(O(n)\) a vertex
+                  that's result from \(U(v)\) equals \(n-1\), by checking it for all vertices.
+            \item The \(P^{\prime}\) linked list can be constructed in \(O(n)\) runtime, needing to iterate through at
+                  worst \(n\) vertices to find repeats, and deleting at most \(O(n)\) edges from the
+                  beginning of \(P^{\prime}\) from the point a repeat is found.
+            \item Therefore we also return a negative weight cycle, if one exists, in \(O(n)\)
+                  runtime.
+            \item Thus the runtime of the above steps is dominated by the \(O(n*m)\) runtime.
+      \end{enumerate}
+\end{proof}
+\newpage
+\section{Problem 2 (6 points)}
+Collaborated with: No One
+
+\subsection{Proposition}
+\paragraph{}
+Let \(G=(V,E)\) be a connected, undirected graph. (We follow here the usual convnetion
+that, unless indicated otherwise, an undirected graph does not have loops or multiple
+edges.) As usual \(n=|V|\) and \(m=|E|\).
+
+\paragraph{}
+An \textit{articulation point} of \(G\) is a vertex whose removal disconnects \(G\).
+
+\paragraph{}
+As we saw in class, if you run DFS on \(G\), then (because \(G\) is connected) the outer
+routine will have to make only one call Explore\((G,r)\) for some vertex \(r\), after
+which all vertices will be visited. The ``tree'' edges created in this process form a
+spanning tree \(T\) of \(G\) rooted at \(r\).
+
+\begin{enumerate}[label= (\alph*)]
+      \item Prove that \(r\) is an articulation point if and only if it has at least two
+            children in \(T\).
+      \item Let \(v \neq r\). The ancestors of \(v\) are the vertices on the simple path
+            in \(T\) from \(v\) to \(r\), inclusive. \textit{Proper} ancestors exclude \(v\).
+            The descendants of \(v\) are those which have \(v\) as an ancestor.
+            \paragraph{}
+            Prove that \(v\) is an articulation point if and only if there is a child \(s\) of
+            \(v\) in \(T\), such that no descendant of \(s\) has a back edge to a proper
+            ancestor of \(v\).
+      \item Let low\((v) = \min \{ \text{pre}(w)  \exists \text{ descendant } u \text{ of } v
+            \text{ such that } (u,w) \text{ is a back edge}\} \). Show how to compute all
+            low\((v)\) in time \(O(m)\).
+      \item Show how to compute all articulation points in time \(O(m)\).
+
+\end{enumerate}
+
+Runtimes in this problem are in the word model (basic arithmetic etc.\ is in unit time).
+
+\subsection{Part (a)}
+\begin{proof} \(r\) is an articulation point if and only if it has at least two children
+      in \(T\).
+      \begin{enumerate}
+            \item To prove \(r\) is an articulation point we will prove in both directions
+                  that if \(r\) is an articulation point, then \(r\) must have greater than or
+                  equal to 2 children contains in the tree \(T\), and then if \(r\) has greater
+                  than equal to 2 children contains in \(T\), than \(r\) must also be an
+                  articulation point.
+            \item Consider that, if \(r\)'s number of children is bounded to be 1 at most,
+                  than \(r\) must not be an articulation point by definition.
+            \item Now, Consider what if \(r\) has no children, then since we know \(r\) is
+                  the root vertex of \(T\) we also know that \(r\) must be the only node of both
+                  the tree \(T\) and the overall (connected) graph \(G\). If we removed \(r\)
+                  from the graph than we will have no nodes in the graph, which is still
+                  connected.
+            \item If \(r\) has a single child vertex \(x\), then we know the only edges
+                  that connect to \(r\) must be of the form \((r,x)\). By deleting \(r\) The
+                  rest of the tree would still exist and by the definition of \(T\) being a
+                  spanning tree, the graph \(G\) would still be connected. Therefore \(r\) must
+                  not be an articulation point with only one child as well.
+            \item Thus \(r\) must have at least 2 children if it is an articulation point.
+            \item To prove the other direction, if \(r\) has at least 2 children contained
+                  in \(T\) it must also be an articulation point. Assume that there are two
+                  children of \(r\) labeled \( (a,b) \).
+            \item Because \(a\) and \(b\) are both next to \(r\), there must not be a route
+                  that connects \(a\) and \(b\) that doesn't go through \(r\), or else \(T\)
+                  would contain a cycle and violate the definition of a spanning tree, and the
+                  application of the DFS would produce a tree that had \(y\) being a descendent
+                  of \(x\) instead of a child of \(r\). If \(r\) were to be deleted, we would
+                  disconnect \(G\) as we had removed the only path between \(x\) and \(y\).
+            \item Without loss of generality, we can now see that there must be at least 2
+                  children without a path between any two of them that doesn't go through \(r\),
+                  such that deleting \(r\) produced a disconnected graph with both substrees of
+                  the children.
+            \item Therefore, \(r\) must be an articulation point if and only if there are
+                  least two direct children of it contained within the tree \(T\).
+      \end{enumerate}
+\end{proof}
+
+\subsection{Part (b)}
+\begin{proof} \(v\) is an articulation point if and only if there is a child \(s\) of
+      \(v\) in \(T\), such that no descendant of \(s\) has a back edge to a proper ancestor of \(v\).
+      \begin{enumerate}
+            \item Similarly to part (2a) we need to prove this in both directions.
+            \item If vertex \(v \in V\) is an articulation point then there is some child
+                  vertex of \(v\), \(x\) so that there is no descendant of \(x\) that has an
+                  edge back to an ancestor of \(v\).
+            \item If every child of \(v\), \(x \in T\) has a descendant of \(x\) that has
+                  an edge back to an ancestor of \(v\), then \(v\) must not be an articulation
+                  point of \(G\).
+            \item If we delete some \(v \in T \in V\) from the graph \(G\), then we may
+                  observe that by the spanning tree definition such a deletion will disconnect
+                  the tree into 2 seperate trees that are each connected internally, and a
+                  connected tree above vertex of deletion.
+            \item If the above wasn't true than \(T\) must not be a proper spanning tree
+                  of \(G\).
+            \item Since we know each of \(v\)'s children must connect back to an ancestor
+                  of \(v\), all 3 of these sub-connected subtrees must be connected together by
+                  their edges.
+            \item There if we can delete some vertex \(v\) and still have a connected
+                  \(G\), then \(v\) must not be an articulation point.
+            \item To prove the other direction, observe that if there exists some \(x \in
+                  T\) that is a child of \(v \in T\), where there is no descendant of \(x\) that
+                  has an edge back to an ancestor of \(v\), such that the only edge that could
+                  be connecting the descendants of \(x\) to the desendants of \(v\) must be the
+                  edges of the tree that have to be going through \(v\) as we know \(T\) is a
+                  tree and \(x\) is a child of \(v\).
+            \item Therefore, if we delete some \(v \in V\) from \(G\), then we must also
+                  delete the edges that form the path that we traverse from the ancestors of
+                  \(v\) to the descendants of \(x\).
+            \item Thus, it is necessary that \(v\) be traversed to bridge the descendants
+                  of \(x\) to the ancestors of \(v\), and the graph has become disconnected, and
+                  therefore \(v\) must also be an articulation point.
+            \item Having proved both sides we have proved that \(v\) is an articulation point if and only if there is a child \(s\) of
+                  \(v\) in \(T\), such that no descendant of \(s\) has a back edge to a proper ancestor of \(v\).
+      \end{enumerate}
+\end{proof}
+
+\subsection{Part (c)}
+\subsubsection{Algorithm}
+This algorithm will be a recursive graph algorithm built on top of the Depth First Search
+algorithm provided in the TA notes.\footnote{TA Notes 6.10.1}
+\begin{enumerate}
+      \item We take as input a graph \(G = (V, E)\).
+      \item Use the DFS from the TA notes to generate the tree \(T\).
+      \item If \(v \in V\) is a leaf, then there is an edge \((v,x)\) and \(\text{low}(v)
+            = \min{ \{\text{pre}(v), \text{pre}(x) \} } \).
+      \item If \(v \in V\) is not a leaf, and we have an edge \(v, y\) where \(y\) is one
+            of \(v\)'s children, then \(\text{low}(v) = \min{ \{ \text{pre}(w) ,
+                  \text{low}(y) \} }\).
+      \item After iterating over all \(v \in V \) we have computed all values \(\text{low}(v)\).
+\end{enumerate}
+
+\subsubsection{Proof of Correctness}
+\begin{proof} This algorithm correctly computes all values of \(\text{low}(v) \forall v
+      \in V\)
+      \begin{enumerate}
+            \item If \(v \in V\) is a leaf, to compute \(\text{low}(v)\) we already know
+                  that the only descendant of \(v\) is \(v\) itself.
+            \item The definition of \(\text{low}(v) = \min{ \{ \text{pre}(x) : (v,x)
+                        \text{ is a back edge}\} } \), which includes \(\text{pre}(v)\) for the vertex
+                  itself. So the value for the case of a leaf vertex is computed correctly.
+            \item Our algorithm recursively walks the tree until it reaches the base cases
+                  of a leaf. We assume that \(\text{low}(z) \forall z \in V\) where the depth is
+                  greater than \(d\) equal to the depth of the current vertex \(v\) in the tree
+                  \(T\).
+            \item To compute \(\text{low}(v)\) for the cases where \(v\) isn't a leaf, we
+                  then need to minimize over the edges of the the descendants of \(v\).
+            \item Since this isn't the case where \(v\) is a leaf, we know there are more
+                  descendents of \(v\) than \(v\) itself, and must consider the values of
+                  \(\text{low}(y)\) where \(y\) is one of \(v\)'s children to minimize over the
+                  depth of the tree one level below that of \(v\).
+            \item Each of the children \(y\) are at depth one greater than \(d\), \(d < d
+                  + 1\), and by induction we assumed the values of \(\text{low}(y)\) were
+                  correctly generated for values at those depths.
+            \item Therefore we have correctly computed the values of \(\text{low}(v)\) for the
+                  case of \(v\) not being a leaf, and thus correctly computed \(\text{low(v)}
+                  \forall v \in V\).
+      \end{enumerate}
+\end{proof}
+\subsubsection{Complexity Analysis}
+\begin{proof} This algorithm has a runtime in \(O(m)\)
+      \begin{enumerate}
+            \item The first thing this algorithm does is run DFS on the graph \(G\) to
+                  construct the spanning tree \(T\) in an \(O(m+n)\) runtime.\footnote{TA Notes 6.10.1}
+            \item Because \(G\) is given as a connected graph, and implicitly that \(n <
+                  m\), we know the run of DFS runs in \(O(m)\).
+            \item To compute the value of \(\text{low}(v)\) the algorithm minimizes over
+                  all values of \(\text{pre}(w)\) for which there exists a backedge \((v, w)\)
+                  and the value of \(\text{low}(x)\) for which \(x\) is one of \(v\)'s children.
+            \item Because all of \(v\)'s children are connected by an edge we are actually
+                  iterating over \( O( \text{deg}(v) ) \) items giving us our runtime in the word
+                  model.
+            \item So we know that computing \( \text{low}(v) \) runs in \( O(
+                  \text{deg}(v) ) \forall v \in V\), and we thus have an overall runtime of
+                  \( O( \sum_{v}{ \text{deg}(v) } ) \).
+            \item We know the sum of all the vertices' degrees is equal to double the
+                  number of edges, this runtime is equal to \(O(2m)\) which is inside \(O(m)\).
+      \end{enumerate}
+\end{proof}
+
+\subsection{Part (d)}
+\subsubsection{Algorithm}
+\paragraph{}
+This algorithm is based on the one we developed in part (2c).
+
+\begin{enumerate}
+      \item We will use the prior algorithm to calculate the value \(\text{low}(v) \forall
+            v \in V \).
+      \item Iterate over \(v \in V \) \begin{enumerate}
+                  \item If \(v\) is found to be a root, then it is an
+                        articulation point if it posessess greater than or equal to two children.
+                  \item If \(v\) is found to be a leaf, then we know it can't be an articulation
+                        point (no children).
+                  \item If \(\text{pre}(v) \leq \text{low}(s)\), where \(v\) is a parent of
+                        \(s\), then \(v\) is an articulation point.
+                  \item Else \(v\) is not an articulation point.
+            \end{enumerate}
+      \item Having saved all the results as we iterated over vertices in \(V\), we
+            generate all values of \(\text{low}(v)\).
+\end{enumerate}
+
+\subsubsection{Proof of Correctness}
+\begin{proof}
+      \begin{enumerate}
+            \item We have two trivial cases to check, that is where \(v\) is a root of the
+                  tree of a leaf at the edges.
+            \item We proved in part (2a) that the root of the tree is an articulation
+                  point if and only if it hat greater than or equal to 2 child nodes in the tree
+                  \(T\).
+            \item If the vertex \(v\) is a leaf, than we know by the definitions of a tree
+                  that its deletion cannot disconnect the graph itself.
+            \item In the other cases for vertex \(v\), we already proved the computation
+                  of \(text{low}(v)\) was calculated correctly in part (2c).
+            \item We know that if \(s\) is a child of \(v\), that \(\text{low}(s) <
+                  \text{pre}(v)\) only if a descendant of \(s\) has an edge to an ancestor of
+                  \(v\) by the definition of \(\text{low}()\) given in the problem.
+            \item If \( \text{pre}(v) \leq \text{low}(s) \), then there is a child vertex
+                  \(s\) that doesn't have an edge to an ancestor of \(v\) amongst its
+                  descendants.
+            \item We proved in part (2b) that the aforementioned case is only possible if
+                  \(v\) is also an articulation point
+            \item Therefore each vertex \(v \in V\) is idenfified as an articulation point
+                  correctly by this algorithm.
+      \end{enumerate}
+\end{proof}
+\subsubsection{Complexity Analysis}
+\begin{proof} This algorithm has a runtime in \(O(m)\)
+      \begin{enumerate}
+            \item All of the simple cases run in constant time, only needing to check the
+                  number of children some vertex has.
+            \item The algorithm in part 2c was already proven to run in \(O(m)\) run time.
+            \item After running the algorithm from part (2c), we iterate over every child
+                  of each vertex \(v \in V\) and do a single comparison that takes constant
+                  time. Because we already ran DFS in the algorithm from (2c), we know this step
+                  takes \(O(n)\) time to run.
+            \item Because we know that \(G\) is a connected graph, we can observe that the
+                  \(O(m)\) term will dominate (the number of edges will be at least or exceed
+                  the number of vertices) and the runtime can be approximated as \(O(m)\).
+      \end{enumerate}
+\end{proof}
+
+\newpage
+\section{Problem 3 (6 points)}
+Collaborated with: No One
+
+\subsection{Proposition}
+\paragraph{}
+In this problem we'll see how strong duality, which is critical in single-commodity flow,
+breaks down in multi-commodity flow.
+
+\paragraph{}
+In multicommodity flow our basic input is \((V, C, s_1, t_1, d_1, \ldots , s_k, t_k,
+d_k)\) where each \(s_i\) or \(t_i\) is a vertex \(V\) (there may be repetitions in the
+list), and each \(d_i\) is some nonnegative \textit{demand}.
+
+\paragraph{}
+The meaning of the edge capacities \(C_{uv}\) is that \(C_{uv}\) bounds the total of all
+commodities flowing across edge \((u,v)\) in \textit{either} direction. We say the input
+is \textit{feasible} is there are flows \(f^1 , \ldots, f^k\) which ship quantity \(d_i\)
+of flow from \(s_i\) to \(t_i\) for each \(i\), and which in combination respect the edge
+capacities. More carefully, this means that each \(f^i\) is an \(s_i - t_i\) flow (in the
+single-commodity sense, so \(f^i\) has flow conservation everywhere except at \(s_i\) and
+\(s_t\)), and that for each \((u,v)\), we have \(\sum^{k}_{1}|f^{i}_{uv}| \leq C_{uv}\).
+
+\paragraph{}
+Let \((S, S^c)\) be any partition of \(V\), i.e., a cut. The \textit{capacity} of the cut
+is \(C_S,S^c = \sum_{u\in S, v \in S^c} C_{uv}\).
+The \textit{demand} of the cut is \(D_{S,S^c} = \sum_{i: s_i \in S, t_i \in S^c} d_i +
+\sum_{i: s_i \in S^c , t_i \in S} d_i\).
+
+\begin{enumerate}[label= (\alph*)]
+      \item (Weak duality) Show that the input is infeasible if there is a cut \((S,
+            S^c)\) such that \(D_{S,S^c} > C_{S,S^c}\).
+      \item (Failure of strong duality) By appropriately choosing demands and capacities
+            for the following network, show that the input may be infeasible even if for all
+            cuts \((S,S^c)\), \(D_{S,S^c} \leq C_{S,S^c}\). (I.e., the converse of (3a) does not
+            hold.)
+            Specifically, I want you to show that for this network, \[\min_{\text{demands } d_i
+                        \text{ and capacities } C_{uv} \text{ satisfying } D_{S,S^c \leq C_{S,S^c}}
+                        \text{ for all } S} \max_{\text{flows} f_i} \min_{i}
+                  \frac{Val(f^i)}{d_i} < 1\] and for maximum credit show how to get \(\leq 3/4\).
+            \tikzstyle{vertex}=[circle,fill=black!25,minimum size=20pt,inner sep=0pt]
+            \tikzstyle{selected vertex} = [vertex, fill=red!24]
+            \tikzstyle{edge} = [draw,thick,-]
+            \tikzstyle{weight} = [font=\small]
+            \tikzstyle{selected edge} = [draw,line width=5pt,-,red!50]
+            \tikzstyle{ignored edge} = [draw,line width=5pt,-,black!20]
+            \paragraph{}
+            \begin{tikzpicture}
+                  % First we draw the vertices
+                  \foreach \pos/\name in {{(0,0)/a}, {(2,1.5)/b}, {(4,0)/c},
+                              {(2,0)/d}, {(2,-1.5)/e}}
+                  \node[vertex] (\name) at \pos {$\name$};
+
+                  % Connect vertices with edges and draw weights
+                  \foreach \source/ \dest /\weight in {b/a/1, c/b/1, b/d/1,
+                              e/c/1,e/d/1, a/e/1}
+                  \path[edge] (\source) -- (\dest);
+                  %   \path[edge] (\source) -- node[weight] {$\weight$} (\dest);
+            \end{tikzpicture}
+\end{enumerate}
+
+\subsection{Part (a)}
+\begin{proof} Show that the input is infeasible if there is a cut \((S,
+      S^c)\) such that \(D_{S,S^c} > C_{S,S^c}\).
+      \begin{enumerate}
+            \item Assume for the sake of contradiction that there exists some cut
+                  \((S,S^c)\) where \(C_{S,S^c} < D_{S,S^c}\) for some feasible input \(I_i =
+                  \text{Val}(f^i)\).
+            \item Observe that \( \sum_{u\in S, v\in S^c} \sum_{i=1}^{k} \leq
+                  \sum_{u\in S, v \in S^c} C_{uv} = C_{S,S^c} \) given that \(C_{uv} \geq
+                  \sum_{i=1}^{k}|f_{uv}^i| \).
+            \item If we sum over the demands and the source and the sink opposite
+                  eachother across the cut (\(D_{S,S^c}\)), then we have \(I_i =
+                  \text{Val}(f^i)\), such that \(D_{S,S^c} = \sum_{i} \text{Val}(f^i)\)
+                  where \(i\) is defined such that \(s_i, t_i\) is valid for sources and
+                  sinks on opposing sides of the cut.
+            \item Using the TA notes\footnote{TA Notes 10.4} redefine the following
+                  \(D_{S,S^c} = \sum_i \sum_{u\in S, v\in S^c} f_{uv}^{i} \), and observe
+                  that can further transform this into the given capacity formula.
+                  \[ D = S_{S,S^c} = \sum_{u\in S, v \in S^c} \sum_i f_{uv}^i \leq \sum_{u
+                              \in S, v \in S^c} \sum_{i=1}^{k} |f_{uv}^i| \leq C_{S,S^c}\]
+                  This holds because the absolute value must be greater than
+                  or equal to the input number.
+            \item In the above we are also summing over more items further right we go in
+                  the expression.
+            \item Because we stated that \(C_{S,S^c} < D_{S,S^c}\), we can rewrite the
+                  inequality as \(D_{S,S^c} \leq C_{S,S^c} < D_{S, S^c}\).
+            \item Contradiction! \(D_{S,S^c} < D_{S,S^c}\) is false and therefore there
+                  must not be a feasible input that exists if there is a cut where \(C_{S,S^c <
+                              D_{S,S^c}}\).
+      \end{enumerate}
+
+\end{proof}
+\subsection{Part (b)}
+\begin{proof} By appropriately choosing demands and capacities
+      for the following network, show that the input may be infeasible even if for all
+      cuts \((S,S^c)\), \(D_{S,S^c} \leq C_{S,S^c}\).
+      \begin{enumerate}
+            \item Choose to set our demands and capacities equal to 1, as we only need to
+                  show that the an input that is infeasible exists under the constraints.
+            \item We will prove by exhaustion that for our chosen values, that each
+                  possible cut satisfies the inequality \(C_{S,S^c} \geq D_{S,S^c}\).
+            \item Using symmetry, observe that for all cuts from size \(z = 0, \ldots,
+                  5\), that a cut with a size of 2 has the same result as a cut with size 3, as
+                  we just switch the choice of \(S\) and \(S^c\). Thus we can reduce the problem
+                  to only considering the cuts with sizes \(0,1,2\).
+            \item Using symmetry again observe that we the results of the cut with regards
+                  to the bottom (vertex e) and top (vertex b) vertices.
+            \item So since we have only two interchangeable choices about that axis for the cut, we just
+                  need to show that \(C_{S,S^c} \geq D_{S,S^c} \), and such symmetry exists
+                  about the middle 3 nodes of the graph.
+            \item For the case with a cut with a size of 0, the inequality can be observed
+                  to be satisfied by inspection as there aren't any edges going across the cut
+                  as there aren't any vertices in the cut to begin with. Thus the capacity and
+                  demand of such a cut must be 0 by inspection.
+            \item If we have a cut with a size of 1, then there are two possible
+                  situations. Choosing a top or a bottom vertex, or choosing a vertex in the
+                  middle, by symmetry.
+            \item Therefore, consider without loss of generality that we cut across the
+                  top vertex \(b\), and a or c to be in the cut for the other cut. There are
+                  three edges that can cross the cut, all of which have a capacity of 1, so our
+                  overall capacity \(C_{S,S^c = 3}\).
+            \item Because there is only one pair of sinks and sources going across the cut
+                  with 4 commodities, and we choose demands equal to 1, the total demand is
+                  \(D_{S, S^c} = 1 \), and therefore \(D_{S,S^c} \leq C_{S,S^c}\).
+            \item With the second cut we pick \(S = a\) and \(S^c = {b, d, c, e}\), and
+                  there are now 2 edges going across the cut with a total capacity of
+                  \(C_{S,S^c} = 2\), and since there are two pairs going across the cut
+                  \(D_{S,S^c} = 2\) and we can see via inspection that \(D_{S,S^c} \leq
+                  C_{S,S^c}\).
+            \item In the case that the cut has a size of 2, then there are 3 possible
+                  sets of cases we need to consider. We need to choose a top vertex and a middle
+                  vertex, or two vertices in the middle, or the vertices at the top and bottom,
+                  by symmetry.
+            \item Without loss of generality, consider the choices for cuts of \(S = \{ b, d\} \),
+                  or \(S = \{ a, d \} \),
+                  or \(S = \{ b, e \} \).
+            \item In the first cut case there are three edges going across the cut, along
+                  with three pairs of sources and sinks, such that \(C_{S,S^c} = D_{S,S^c} = 3\)
+                  and the inequality also holds for these cases.
+            \item Despite the prior demonstrations, we can still choose a set of
+                  circumstances where an input that satisfies the inequality becomes feasible.
+                  Assume, for contradiction, that the input is always feasible, such that there
+                  is a flow set \(f^1, \ldots, f^k 6\) with has a shipping quantity greater than
+                  \(\frac{3}{4}\) over \(s_i\) and \(t_i\) for every \(i\) commodity.
+            \item In order for each commodity to get from its source to its sink, it must
+                  take at least two edges to traverse the graph. So summing up the amount being
+                  shipped totals to \(\frac{3}{2}\) for every pair of sources and sinks.
+                  With 4 such pairs the flow exceeds 6 over the whole graph.
+            \item Because we choose that the capacities of each edge were capped at 1
+                  however, since there are 6 edges in the graph the total capacity must
+                  also be equal to 6.
+            \item Contradiction! If we can ship greater than \(3/2\) of a good we must
+                  exceed the capacity of the graph as the flow will exceed 6.
+            \item Thus there must be at least one possible flow configuration bounded by
+                  \(\frac{3}{4}\) else the capacity of the graph with respect to flow will
+                  become infeasible, and thus such an input may always exist even for the
+                  theoretical maximizing shipping quantities of each commodity.
+      \end{enumerate}
+\end{proof}
+
+
+\newpage
+
+
+\section{Problem 4 (12+ points)}
+Collaborated with: Non Collab.
+
+\subsection{Proposition}
+\paragraph{}
+In this question you are asked to use Branch and Bound to gather evidence for or against a
+certain conjecture in number theory. (If true this conjecture yields the only known
+construction of a certain class of error-correcting codes; but that is too long a story to
+tell here.)
+
+\paragraph{}
+First, some preliminaries. For any integer \(N \geq 2\), \(\ZZ /N\) is the ring of
+integers modulo \(N\), namely the set \( \{ 0, \ldots , N-1\} \) with addition, subtraction,
+and multiplication modulo \(N\). Division is not always possible; you can perform the division
+\(x/y\) only if \(y\) is invertible modulo \(N\), namely, there exists another element of
+\(\ZZ / N\), called \(y^{-1}\), such that \(y \dot y^{-1} = 1 \mod N\). In that case,
+\(x/y\) is defined to be \(x \dot y^{-1}\). The criterion for whether or not \(y\) is
+invertible is quite simple: it is that \(y\) and \(N\) should be relatively prime, namely,
+gcd\((y,N) = 1\). As we saw earlier in the course, an equivalent condition is that there
+exist integers \(a, b\) such that \(a N + b y = 1\); and then \(b = y^{-1} \mod N\).
+
+\paragraph{}
+In this exercise we need only the case that \(N = 2^l\). So the invertible elements are
+precisely the odd integers modulo \(2^l\).
+
+\paragraph{}
+For \(x \in \mathbb{C}\), let \(R (x)\) be the real part of \(x\). And define
+\(\epsilon_N : \ZZ / N \rightarrow \mathbb{C} \) by \(\epsilon_N (y) = \exp{(2\pi \imath y
+      / N)}\).
+
+\paragraph{}
+For a given \(l \geq 1\), let
+\[f_l (y) = \frac{1}{l} R (\sum_{m=0}^{l-1} \epsilon_{2^l}(y {(2/3)}^m ))\]
+
+Notice that the division by 3 is not in \(\RR \); this is multiplication by \(3^{-1}\) in
+\(\ZZ /2^l\).
+
+\begin{lemma}
+      There is a \(c<1\) such that for any \(l \geq 1\) and any odd integer \(y\), \(f_l
+      (y) \leq c\).
+\end{lemma}
+
+Let \(F(l) = \max_{y \text{ odd}} f_l (y)\).
+
+\begin{enumerate}[label= (\alph*)]
+      \item (6 points) \paragraph{} Write a straightforward program which exhaustively
+            evaluates \(f_l (y)\) for all odd \(1 \leq y \leq 2^l - 1\), and computes the
+            function \(F(l)\) up to at least \(l =20\). Hand in your code, the values of \(F\)
+            you have computed, the runtime of your code for \(l = 20\), and the runtime of your
+            code for the largest value of \(l\) you computed. (I don't care what language or
+            environment you use --- Mathematica Matlab, Maple, C, Python, \ldots)
+            Here are rounded values \(l = 1, \ldots, 8\):
+            \[
+                  \left[
+                        \begin{array}{c|c|c|c|c|c|c|c|c}
+                              l    & 1  & 2    & 3         & 4         & 5         & 6        & 7        & 8        \\
+                              \hline
+                              F(l) & -1 & -0.5 & -0.096311 & 0.0224476 & 0.0610417 & 0.210358 & 0.309448 & 0.369311
+                        \end{array}
+                        \right]
+            \]
+      \item (6+ points) \paragraph{}
+            Now we explore the tree structure of the problem and
+            bring in the Branch and Bound idea.
+            \paragraph{}
+            Notice that while 3 is invertible modulo \(2^l\), 2 of course is not.
+            In fact, what is happening as you go through the stages
+            \( y \rightarrow y \dot ( 2 / 3 ) \rightarrow y \dot {( 2/3 )}^2 \rightarrow \ldots
+            \rightarrow 2^{l-1}\) is that each stage is a 2-to-1 map. For instance in the first
+            step, the odd numbers \(y\) and \((2^{l-1} + y) \mod 2^l \) both map to \(2y/3 \mod
+            2^l\), a number which is divisible bny 2 but not by 4. In the very last stage, the two
+            numbers \(2^{l-2}\) and \(2^{l-1} + 2^{l-2}\) map to \(2^{l-1}\).
+            \paragraph{}
+            Now you should ``turn this around'' and imagine a binary tree whose vertices are labeled
+            with certain rational numbers. The root is labeled with 1/2. In general, if a vertex is
+            labeled with \(z\), its children are labeled, one each, with the two values of
+            \(z^{\prime} \mod{1}\) satisfying the equation \(2z^{\prime} = 3 z \mod{1}\). (``Mod 1''
+            gives the fractional part of a number. Note that there are indeed two distinct
+            \(z^{\prime}\) satisfying the equation \(2z^{\prime} = 3z \mod{1}\), offset by \(1/2\),
+            since \(2 \dot (1/2) = 0 \mod{1}\)).
+            \paragraph{}
+            For example, the children of the root are labeled with \(1/4\) and \(3/4\). The children
+            of the vertex labeled \(1/4\) are labeled with \(3/8\) and \(7/8\); while the children
+            of the vertex labeled \(3/4\) are labeled with \(1/8\) and \(5/8\). You will notice that
+            at level \(l\) of the tree (with the root being level 1), the labels have denominators
+            \(= 2^l\) and odd numerators. Let \(L_l\) denote the set of vertices at level \(l\) of
+            the tree; for vertex \(v\) let \(A(v)\) denote the ancestors of \(v\) (the vertices on
+            the simple path from \(v\) to the root, inclusive); and let \(z(v)\) denote the rational
+            number labeling vertex \(v\).
+            \paragraph{}
+            You can now verify that if vertex \(v\) is such that \(z(v) = y/2^l\), \(y\) odd, then
+            \[f_l (y) = \frac{1}{l} R (\sum_{u\in A(v)}^{} \exp{(2 \pi \imath z(u))})\]
+            \paragraph{}
+            Let us denote this value also \(\hat{f}(v) = f_l (y)\).
+            \paragraph{}
+            This means that if \(w\) is some vertex in the tree at depth \(k\), then all vertices
+            \(v\) which are at depth \(l\) and are descendants of \(w\), satisfy
+
+            \[\hat{f}(v) = \frac{1}{l} (k \hat{f}(w) + R(\sum_{u\in A(v) - A(w)} \exp{2 \pi \imath
+                        z(u)}))\]
+
+            \paragraph{}
+            Use this observation to design a branch and bound algorithm to compute \(F(l)\). Describe
+            it and justify correctness. Then program it. For full credit use it to compute \(F(l)\) up
+            to at least \(l=40\). Hand in your code and a CSV file of results with each row containing
+            the value of \(l\), the value of \(F(l)\), and the time it took to compute this value. For
+            additional credit, run your program for larger values of \(l\). One additional point of
+            credit for each 20 additional values of \(l\), up to three additional points. (So through
+            \(l=100\))
+            \paragraph{}
+            Submission mechanism: For both parts (4a) and (4b), you should submit both your code and a
+            CSV files of results to Gradescope. See Canvas for additional details on the submission
+            format.
+            \paragraph{}
+            We will have a leaderboard for part (4b) on Gradescope.
+\end{enumerate}
+A few comments regarding this exercise:
+\begin{enumerate}[label= (\alph*)]
+      \item Precision: to get up to \(l=100\) you should use double precision arithmetic
+            in your calculations. (For small \(l\) this doesn't matter too much, the calculation
+            is not so unstable if done right; but it can matter for large \(l\)).
+      \item The code you submit should be clearly written and implement the algorithm
+            effectively. However, for full credit on both paths of the problem your code does
+            not need to be optimized for speed. You are collecting runtimes to compare the
+            scaling of the two algorithms, not in order for us to compare students.
+      \item I have learned that in past years, for the ``+'' points, a few students went so
+            far as to rent time on computing clustrs. I appreciate the effort, but please don't
+            go to this extreme. I don't like to you see your money spent this way. Anyway for
+            all this trouble you won't be able to earn more than another 1 or at the outside 2
+            points. Most of the gain lies in writing efficient code.
+\end{enumerate}
+\subsection{Part A}
+
+
+\subsection{Part B}
+\subsubsection{Algorithm}
+\paragraph{}
+This algorithm is based on Branch and Bound algorithm described in the TA
+Notes.\footnote{TA Notes 7.1}
+
+\begin{enumerate}
+      \item Let \(u\) be a value initialized to \(u = -1\).
+      \item Let \(U(q) = \frac{1}{l} (k \hat{f}(w) + (l - k)) \) be the upperbound on
+            \(\hat{f}(v)\), for some \(q \in T\), where depth equals \(k\) and \(v\) is
+            some vertex at a depth of \(l\) that is a leaf and descendant of \(q\).
+      \item Start at the root of the tree \(T\) that we call \(r\)m then traverse the tree
+            in order. For each node \(n \in T \) \begin{enumerate}
+                  \item If \(n\) is a leaf, then if \(m < \hat{n} \), update the value of
+                        \(m = \hat{f}(n) \).
+                  \item If \(n\) isn't a leaf, if \(m \geq U(n) \), then break and stop
+                        processing the graph at node \(n\).
+            \end{enumerate}
+
+\end{enumerate}
+
+\subsubsection{Proof of Correctness}
+\begin{proof} Prove this algorithm correctly traverses the graph.
+      \begin{enumerate}
+            \item In order to prove this algorithm produces correct output, we must show
+                  that the upper bound \(U(q)\) is a correct upper bound for \(\hat{f}(v)
+                  = \frac{1}{l} (k \hat{f}(q) + R (\sum_{u\in A(v) - A(q)} \exp{(2 \pi
+                        \imath z (u))}))\) for some vertex \(q \in T\) at a depth of \(k\) and
+                  \(v\) is a descendant of \(q\)
+            \item Reduce the exponential term to its sin and cosine representation and
+                  extract the real component. \(R(\exp (2 \pi \imath z(u))) = \cos{(2 \pi z
+                        (u))}\).
+            \item Recall that the cosine function is bounded between -1 and 1, so we know
+                  that \(\hat{f}(v) \leq \frac{1}{l} (k \hat{f}(q) + (\sum_{u \in A(v) -
+                        A(q)} 1))\).
+            \item Because we know that \(q\) is at a depth of \(k\), and that \(v\) is at
+                  a depth of \(l\), then we also know that \(A(v) - A(q)\) must have \(l -
+                  k\) elements.
+            \item Therefore we sum \(l-k\) times and we can rewrite the summation in
+                  \(\hat{f}(v)\) to be \( \hat{f}(v) \leq \frac{1}{l} (k \hat{f} (q) +
+                  (l-k)) = U(q) \).
+            \item We are given in the problem description that at each and every level of
+                  the tree, \(l\), that the \(z\) labels must have odd numerators, and
+                  denominators equal to \(2^l\)
+            \item At every depth level \(l\), there are exactly the number of leaves equal
+                  to the set we want to maximize using \(f\).
+            \item Because we defined \(\hat{f}(v)\) with \(v\) at a depth of \(l\), and
+                  \(q\) as any vertex found at a depth of \(k\), then we have constructed
+                  an upper bound for \(\hat{f}\) that can be computed for any vertex \(w
+                  \in T\).
+            \item This closely matches the description we have for the algorithm in the
+                  notes, and we can now show that this is equivalent to the naive (and correct)
+                  algorithm we implemented in part (4a).
+            \item We disregard all nodal descendants of \(n\) where \(m \geq U(n)\), and
+                  we proved that if \(v\) is a descendant of \(n\) that happens to be a leaf
+                  than \(\hat{f}(v) \leq U(n)\).
+            \item Therefore, when find that \(m \geq U(n)\) is satisfied, then
+                  \(m\hat{f}(v)\) must be satisfied too.
+            \item Thus, the maximum won't change if we consider any learf \(v\) that is a
+                  descendant of \(n\).
+            \item So we can break out of traversing the tree when we reach a node \(n\)
+                  that satisfies the above checks, as continued processing will not yield
+                  a higher maximum.
+            \item If node \(n\) is a leaf than we need only compare \(\hat{f}(n)\) to the
+                  current maximum and update it if necessary, as that would indicate an
+                  entire subtree was examined before reaching the leaf \(n\).
+            \item Therefore this is a correct branch and bound algorithm in the form
+                  provided by the TA notes, that computes the stated function in an
+                  efficient runtime compared to the naive method.
+      \end{enumerate}
+\end{proof}
+\subsubsection{Complexity Analysis}
+\begin{proof} This algorithm has a runtime in\dots
+      \begin{enumerate}
+            \item
+      \end{enumerate}
+\end{proof}
+
+\end{document}

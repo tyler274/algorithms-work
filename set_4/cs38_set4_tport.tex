@@ -1,0 +1,244 @@
+% preamble
+\documentclass{article}
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\setlength{\headheight}{12pt}
+\usepackage[headsep=1cm,total={6.5in, 8.5in}]{geometry}
+
+% useful packages
+\usepackage{amsmath,amssymb, amsthm}
+
+% add your own packages here
+\usepackage{verbatim}
+% \usepackage[style=verbose]{biblatex}
+\usepackage{enumitem}
+% \usepackage{filecontents}
+% \begin{filecontents}{myreferences.bib}
+%     @online{foo12,
+%       year = {2012},
+%       title = {footnote-reference-using-european-system},
+%       url = {http://tex.stackexchange.com/questions/69716/footnote-reference-using-european-system},
+%     }
+% \end{filecontents}
+
+% % Save the bib to disk (or update it).
+% \addbibresource{myreferences.bib}
+
+% commands for header, fill in the appropriate values
+\newcommand{\codename}	{Snoop Matroidd} % type name here
+\newcommand{\settitle}	{Problem Set 4} %type set title here (ex. Problem Set 3, Midterm)
+\newcommand{\latesub}	{No} % type yes/no indicating late submission
+
+% a few helpful commands 
+\newcommand{\RR}{\mathbb{R}} % typing \RR prints the Blackboard R used for Real Numbers
+\newcommand{\NN}{\mathbb{N}} % typing \NN prints the Blackboard N used for Natural Numbers
+\newcommand{\ZZ}{\mathbb{Z}} % typing \ZZ prints the Blackboard Z used for Integers
+
+% construct your own commands here
+
+\newcommand{\GCD}{\textrm{GCD}}
+
+% commands for header, don't adjust
+\begin{document}
+\thispagestyle{empty}
+\begin{center}
+      \framebox[6.5in]{
+            \vbox{
+                  \vspace{2mm}
+                  \makebox[6.3in][l]{\textbf{CS~38~~~Algorithms}\hfill \textbf{\today}}
+                  \vspace{4mm}
+                  \makebox[6.5in][c] {\Large \hfill \settitle{\hfill}}
+                  \vspace{2mm}
+                  \makebox[6.3in][l] {\textbf{Codename: } \codename{ \hfill \textbf{Late Submission:}
+                              \latesub}}
+                  \vspace{2mm}
+            }
+      }
+\end{center}
+\vspace*{1mm}
+\pagestyle{fancy}\lhead{Codename: \codename} \chead{\settitle}
+\rhead{\today}
+
+% insert solution here
+\section{Problem 1 (6 points)}
+Collaborated with: No One
+
+\subsection{Proposition}
+\paragraph{}
+We have seen that the Activity Selection problem can be solved with a greedy algorithm
+thanks to a certain \textit{exchange} property. This exchange property, however, is not
+precisely the same as the one we encountered in matroid theory.
+
+A natural suggestion is to check whether the family of all non-overlapping sets of
+activities, forms a matroid. Show it is a hereditary family but does not satisfy the
+Steinitz exchange axiom.
+
+\subsection{Proof}
+\begin{proof}
+      \begin{enumerate}
+            \item The Activity Selection problem takes as input a set of activities, and
+                  returns a solution to the problem as a subset of those activities.
+            \item Each activity is denoted by a unique ID, and has a start time \(t_s\),
+                  and a time to be finished by \(t_f\).
+            \item For a solution to be valid the result must be a non overlapping subset
+                  of activities.
+            \item Assume that this can be represented and solved using a matroid solution.
+            \item Consider the three activities \({A_1, A_2, and A_3}\) where \(A_1\)
+                  overlaps with \(A_2\) and with \(A_3\), but neither \(A_2\) or \(A_3\)
+                  overlap with one another.
+            \item There are only two valid solutions, the subset consisting of \(A_1\),
+                  and the subset consisting of \({A_2, A_3}\).
+            \item Contradiction, the Steinitz Exchange axiom is not satisfied as \(A_2\)
+                  or \(A_3\) can't extend our solution of \({A_1}\).
+            \item Thus, the exchange axiom is not satisfied for the Activity Selection
+                  problem.
+            \item To prove the Hereditary Axiom, assume that for the sake of contradiction
+                  if \(J \in F\) and \(I \subseteq J\), then \(I \notin F\).
+            \item Given our above set of three activities, observe that any individual element of
+                  \({A_1, A_2, A_3}\) must me a subset of the whole, and that any equal
+                  subset must by extension be an element of \(F\).
+            \item Contradiction, as we assumed that \(I \subseteq J\) implies \(I \notin
+                  F\), and this violated our definition of set theory.
+            \item Thus, the Hereditary Axiom holds.
+      \end{enumerate}
+\end{proof}
+
+\newpage
+\section{Problem 2 (6 points)}
+Collaborated with: No one
+
+\subsection{Proposition}
+
+\paragraph{\indent}
+Let \(G = (V, E, w)\) be a weighted, undirected graph. For a spanning tree \(T\) of \(G\),
+let \(L(T)\) be the sorted list of edge weights of \(T\) (with repetition). Show that for
+any two minimum spanning trees \(T_1, T_2, L(T_1) = L(T_2)\).
+
+\subsection{Proof}
+\begin{proof}
+      \begin{enumerate}
+            \item We will prove this using Kruskal's algorithm as described in lecture 9\footnote{Lec09H.pdf}.
+            \item Assume that \(L(T_1) \neq L(T_2)\) for sake of contradiction.
+            \item Let \(L_d = L(T_1) \ominus L(T_2) \) be the disjunctive union of the
+                  sets.
+            \item Choose an edge in only one of the trees \( e \in T_1 \ominus T_2\) such
+                  that the weight \(w(e) = \min(L_d) \).
+            \item Without loss of generality, there must always be an edge that satisfies the above, as not every edge
+                  with a minimized weight can exist in both of the trees, or \(\min(L_d)
+                  \notin L_d \).
+            \item Let \( e\in T_1 \) and assume that \(T_1\)
+                  has more edges with weight of \(\min(L_d)\) than in \(T_2\).
+            \item Using Kruskal's algorithm for cutting, find all the edges of \(T_2\)
+                  that cross the cut of \(T_1\) on \(e\).
+            \item If we find an edge \(f\) such that \(w(e) = w(f)\) then replace \(e\)
+                  with \(f\).
+            \item We can observe via inspection that the modified \(T_1\) remains a minimal spanning
+                  tree, and has the same sorted list of edge weights as our starting
+                  \(T_1\).
+            \item Iterating on the above, we remove two elements from \(L_d\)
+                  and one edge from the set of possible \(e\) at each iteration.
+            \item As the set universe we are working with is finite, there must be finite
+                  iterations to get to the point where the all the edges in the
+                  intersection of \(T_2\) and the cut of the new \(T_1\) on each \(e\) has
+                  a weight distinct from \(w(e)\).
+            \item Thus we can choose an edge \(f \in \) the intersection of the cut on
+                  \(T_1\) and \(T_2\) where we can replace \(e\)and \(f\) to create
+                  another spanning tree \(T' = \{^{(T_1 \backslash \{e\}) \cup \{f\}, w(f)
+                              < w(e)}_{(T_2 \backslash \{f\}) \cup \{e\}} \).
+            \item The MST \(T'\) has a total edge weight less than either \(T_1\) or
+                  \(T_2\), which is a contradiction as we were given that \(T_1\) and
+                  \(T_2\) are MSTs.
+            \item Thus we can conclude that \(L(T_1) = L(T_2)\) for any two minimum
+                  spanning trees of some graph \(G\).
+      \end{enumerate}
+\end{proof}
+
+\newpage
+\section{Problem 3 (6 points)}
+Collaborated with: No collab
+
+\subsection{Proposition}
+
+\paragraph{}
+As you probably remember, the graph coloring problem --- given an undirected graph, color
+the vertices with the fewest possible colors so that every edge is bi-chromatic --- is
+NP-hard. For graphs with extra structure, the problem may be easier, and this problem is
+concerned with one such situation.
+
+An \textit{interval graph} is one in which each vertex
+\(v\) is labeled with an interval on the real line \(s_v, t_v\), \(s_v < t_v\), and there
+is an edge \( (u,v) \) if the two intervals \(s_u, t_u\), \(s_v, t_v\) intersect
+internally.
+
+Design an \(O(n \log n)\)-time algorithm to optimally color an interval graph having \(n\)
+vertices. You may assume that basic arithmetic on, or comparisons between, interval
+endpoints (the \(s\)'s and \(t\)'s), can be performed in unit time.
+
+
+\subsection{Algorithm}
+\begin{enumerate}
+      \item We will devise a greedy algorithm using the Activity Selection method given in
+            the TA Notes\footnote{TA Notes 5.2.1, Lec10H.pdf} that optimally colors an interval graph of
+            \(n\) vertices.
+      \item Label our integer colors \( c \in \ZZ \) with real intervals \( (s(c), t(c))
+            \in \RR \) and initialize \(c := 0\) to store the largest color index that we
+            use.
+      \item Let \(Q\) be a queue containing each color thats been utililized, and
+            initialize it to the empty set \( Q := \emptyset \).
+      \item Let \(P = \text{MakePriorityQueue} (P) \) \( \{ s_i, t_i : 1 \leq i \leq n \}
+            \) be a priority queue as described in lecture 10\footnote{Lec10H.pdf} and the
+            TA Notes\footnote{TA Notes 5.8.1}. \(P\) is filled with every
+            interval end \(t_v\) along with its interval and we tie break for some pair
+            \( (t_u,t_v) \) preferentially on the \(t_u, t_v\) values (interval ends). If
+            for some pair \( (u,v) \) the values of \( t_u = t_v \) then tie break on the
+            \( s_u, s_v\) values (interval beginnings).
+      \item While \(P \neq \emptyset \) keep looping executing the following
+            \begin{enumerate}
+                  \item Let \(a := \text{DeleteMin}(P)\).
+                  \item If \(a \in s\), then if \(Q \neq \emptyset \) then assign color
+                        \(b := Pop(Q)\) else assign \(c := c + 1\) and \(b := c\), then
+                        assign \(s(b) := s_a\) and \(t(b) := t_a\) where \(s(b)\) and
+                        \(t(b)\) are the reals labeling color \(b\)'s interval.
+                  \item Else if \( a \notin s \), then \( s(b) := s(a)\) and \(t(b) =
+                        t(a)\), then \(\text{Push} (Q, b) \).
+            \end{enumerate}
+      \item When we have finished the above loop iterations and have empty \(P\) we will then have an optimal
+            coloring of our interval graph in the variable \(c\).
+\end{enumerate}
+
+\subsection{Proof of Correctness}
+\begin{proof}
+      \begin{enumerate}
+            \item Let \(C\) be the supposed maximum number of colors used during the
+                  running of the algorithm, and thus the value of \(c\) after running our
+                  algorithm to completion (for some labeled interval graph \(G = (V,E)\)).
+            \item When the color \(C\) is assigned to a vertex (end interval), each color
+                  from the color at \(1\) to the color at \(C-1\) is assigned to some
+                  vertex \( \in V\).
+            \item This algorithm only allows a vertex to be specific color if and only if it maps to
+                  that color's interval.
+            \item Thus the set of vertices we are given contains \(C\) mutually
+                  overlapping colors.
+            \item Thus \(C\) is a lower bound on the numbers of colors needed to optimally
+                  color the graph.
+            \item As the algorithm is designed to use exactly \(C\) colors it already uses
+                  the lower bound of the number of colors necessary.
+            \item Thus our algorithm performs a minimal coloring of the graph as desired.
+      \end{enumerate}
+\end{proof}
+
+\subsection{Proof of Complexity}
+\begin{proof}
+      \begin{enumerate}
+            \item This algorithm runs in \(O (n \log n) \) as we can observe that there
+                  are \(2n\) ends of the interval that populate our priority queue, and
+                  thus \(2n\) bounds the number of iterations.
+            \item For each of these interval ends we do an \( O(\log n ) \) Insert and an
+                  \(O(\log n)\) DeleteMin as described in the notes from lecture 10\footnote{Lec10H.pdf}.
+            \item Thus we have an algorithm that runs in \( O((2n) (2 \log n)) = O(n \log
+                  n) \).
+      \end{enumerate}
+\end{proof}
+
+\end{document}
+

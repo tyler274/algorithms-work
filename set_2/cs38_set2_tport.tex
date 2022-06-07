@@ -1,0 +1,486 @@
+% preamble
+\documentclass{article}
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\setlength{\headheight}{12pt}
+\usepackage[headsep=1cm,total={6.5in, 8.5in}]{geometry}
+
+% useful packages
+\usepackage{amsmath,amssymb, amsthm}
+
+\usepackage[shortlabels]{enumitem}
+
+% add your own packages here
+\usepackage{verbatim}
+
+% commands for header, fill in the appropriate values
+\newcommand{\codename}	{Snoop Matroidd} % type name here
+\newcommand{\settitle}	{Problem Set 2} %type set title here (ex. Problem Set 3, Midterm)
+\newcommand{\latesub}	{No} % type yes/no indicating late submission
+
+% a few helpful commands 
+\newcommand{\RR}{\mathbb{R}} % typing \RR prints the Blackboard R used for Real Numbers
+\newcommand{\NN}{\mathbb{N}} % typing \NN prints the Blackboard N used for Natural Numbers
+\newcommand{\ZZ}{\mathbb{Z}} % typing \ZZ prints the Blackboard Z used for Integers
+
+% construct your own commands here
+
+\newcommand{\GCD}{\textrm{GCD}}
+
+
+% commands for header, don't adjust
+\begin{document}
+\thispagestyle{empty}
+\begin{center}\framebox{\vbox{ \vspace{2mm}
+                  \hbox to 6.5in {\textbf{CS~38~~~Algorithms}\hfill \textbf{\today}} \vspace{4mm}
+                  \hbox to 6.5in {\Large \hfill \settitle{}  \hfill} \vspace{2mm}
+                  \hbox to 6.5in {\textbf{Codename: } \codename{} \hfill \textbf{Late Submission: } \latesub} \vspace{2mm}}
+      }
+\end{center} \vspace*{1mm}
+\pagestyle{fancy}\lhead{Codename: \codename} \chead{\settitle} \rhead{\today}
+
+% insert solution here
+\section{Problem 1 (6 points)}
+Collaborated with: No one.
+
+\paragraph{\indent}
+In the following recurrence problems, you may suppose: (a) For \(1 \leq n \leq n_0\), \(T(n) = 1\) and \(f(n) = 1\);
+(b) Rounding the arguments of \(T\) or \(f\) has no effect on the asymptotics. One way to deal with this
+is simply to consider \(T\) and \(f\) extended to all real \(n \geq 1\), where for non-integer n we define \(f(n)\) to
+be \(f(\lfloor n \rfloor)\).
+
+\begin{enumerate}[(a)]
+      \item If \(\exists c > 1, n_0\), s.t. \(\forall n > n_0, \sum_i f(n/b_i) \geq
+            cf(n)\), then \(T(n) \in \Theta(\#leaves) = \Theta(n^w) \).
+            \newline(The runtime is dominated by thr work at the leaves of the recursion tree.)
+      \item If \(f(n) \in \Theta(n^w)\), then \(T(n) \in \Theta(n^w \log n)\).
+            \newline(The work done at each level is approximately equal.)
+      \item If \(\exists c<1, n_0\), s.t. \(\forall n > n_0, \sum_i f(n/b_i) \leq cf(n)\),
+            then \(T(n) \in \Theta(f(n))\).
+            \newline(Most of the work is done at the root.)
+\end{enumerate}
+
+\subsubsection{Proposition}
+\paragraph{\indent}
+Consider the runtime recurrence \(T(1) = 1\), \(T(n) = n \log n + 2T(\lfloor n/2 \rfloor)\). Explain why
+the generalized master theorem does not solve this recurrence for us. Solve it
+anyway. Explain why the generalized master theorem given above does not solve this
+recurrence for us (you do not need to prove anything about this theorem). Solve it
+anyway. (Precisely, find an explicit function \(f(n)\) such that you can show that there exists
+constants \(0 < c < C\) such that \(c f(n) \leq T(n) \leq C f(n)\) for all large enough \(n\). Partial
+credit if you can only get one of the two inequalities.)
+\subsubsection{Proof}
+\begin{proof} Proof that the GMT doesn't hold for this function.
+      \begin{enumerate}
+            \item The runtime recurrence given needs to be solved with the substitution method as
+                  the generalized master theorem does not give us a recurrence relation
+                  that we can solve.
+            \item We will prove the prior assertion by assuming we can use any of cases
+                  (a), (b), and (c), and then then finding a contradiction in our proof.
+            \item  \begin{proof} First case of the GMT
+                        \begin{enumerate}[(i)]
+                              \item Assume that case (a) holds, s.t. \(b_1 = 2\) and that \(b_2 = 2\).
+                              \item Observe that \(\sum_i f(n/b_i) = 2f(n/2)\).
+                              \item Observe that, for some value of \(c>1\), \(2f(n/2) \geq cf(n)\).
+                              \item The given function is defined as \(f(n) = n \log n \).
+                              \item \(\therefore \exists c > 1 \implies n \log (n/2) \geq c n \log n \).
+                              \item Contradiction! \(\log (n/2) < \log (n)\).
+                              \item \( \therefore \nexists c > 1 \).
+                              \item \( \therefore \) case (a) doesn't hold.
+                        \end{enumerate}
+                  \end{proof}
+            \item  \begin{proof} Second case of the GMT
+                        \begin{enumerate}[(i)]
+                              \item Assume case (b) holds, s.t. \(w=1\).
+                              \item \(\implies n \log n  \in \Theta (n)\).
+                              \item Contradiction! This violates the definition of Big
+                                    Theta notation.
+                              \item \(\therefore \) case (b) doesn't hold.
+                        \end{enumerate}
+                  \end{proof}
+            \item \begin{proof} Third case of the GMT
+                        \begin{enumerate}[(i)]
+                              \item Assume case (c) holds, s.t. \(b_1 = b_2 = 2\).
+                              \item \( \implies \exists c < 1; \sum_i f(n/ b_i) = 2f(n/2) \leq cf(n)\).
+                              \item \( \implies n \log (n/2) \leq  cn \log n \).
+                              \item \( \implies \log (n) - \log (2) \leq c \log n\).
+                              \item \( \implies \log 2 \geq \log (n) * (1-c)\).
+                              \item Contradiction! \( \nexists c < 1\) that holds for
+                                    every possible value of \(n\).
+                              \item \( \therefore \) Case (c) doesn't hold.
+                        \end{enumerate}
+                  \end{proof}
+            \item Having proved that each case of the Generalized Master Theory fails to
+                  hold for our given function, we have proved that the GMT cannot solve
+                  this recurrence relation.
+      \end{enumerate}
+\end{proof}
+\subsubsection{Solution}
+\begin{enumerate}
+      \item To solve for the runtime recurrence \(T(n)\) we can use the substitution
+            method from the TA notes.
+      \item Without loss of generality, assume that \(1 < \log (n_0)\)
+      \item Define \( c_a = MIN(k_a, (1+\log ^2(2)) /( 2 \log 2))\), s.t. \(k_a > 0 \implies k_a n
+            \log^2(n) \leq T(n) \forall n \leq n_0 \).
+      \item Define \( c_b = MAX(k_b, (1 + \log^2 (2)) / (2 \log 2))\), s.t. \(k_b n \log^2
+            (n) \geq T(n) \forall n \leq n_0\).
+      \item \begin{proof} Use induction to prove that \(\forall n, c_a n \log^2 (n) \leq T(n) \leq c_a n
+                  \log^2(n)\).
+                  \begin{enumerate}
+                        \item \begin{proof}
+                                    Base Case: \(n \leq n_0\)
+                                    \begin{enumerate}
+                                          \item Observe that \(c_a n \log^2 (n) \leq k_a n
+                                                \log^2 (n) \leq T(n) \leq k_b n \log^2(n)
+                                                \leq c_b n \log^2 (n)\).
+                                          \item This follows our assumption so far.
+                                    \end{enumerate}
+                              \end{proof}
+                        \item Assume \(\forall j; j < n\), \(c_a j \log^2(n) \leq
+                              T(j) \leq c_b j \log^2 (j) \)
+                        \item \begin{proof}
+                                    Inductive case for the lower bound
+                                    \begin{enumerate}
+                                          \item \(T(n) = n \log n + 2 T(n/2)\)
+                                          \item \( \implies T(n) \leq n \log n  + c_a n \log^2 (n/2)\).
+                                          \item \( \implies T(n) \leq n \log n + c_a n ( \log^2 (n) -
+                                                2 \log (2) \log(n) + \log^2(2)) \).
+                                          \item \( \implies T(n) \leq c_b n \log^2 (n) + n \log (n)
+                                                (1-2 c_b \log(2)) + n \log^2 (2)\).
+                                          \item \((1+\log^2(2)/(2\log (2))) \geq c_a\).
+                                          \item \( \implies 0 \geq 1 - 2 c_a \log (2) + \log^2 (2)\).
+                                          \item \( 1 \leq \log (n_0) \leq \log (n)
+                                                \implies c_a n \log^2 n \geq T(n)\).
+                                    \end{enumerate}
+                              \end{proof}
+                        \item \begin{proof}
+                                    Inductive case for upper bound
+                                    \begin{enumerate}
+                                          \item \(T(n) = n \log n + 2 T(n/2)\)
+                                          \item \( \implies T(n) \leq n \log n  + c_b n \log^2 (n/2)\).
+                                          \item \( \implies T(n) \leq n \log n + c_b n ( \log^2 (n) -
+                                                2 \log (2) \log(n) + \log^2(2)) \).
+                                          \item \( \implies T(n) \leq c_b n \log^2 (n) + n \log (n)
+                                                (1-2 c_b \log(2)) + n \log^2 (2)\).
+                                          \item \((1+\log^2(2)/(2\log (2))) \leq c_b\).
+                                          \item \( \implies 0 \geq 1 - 2 c_b \log (2) + \log^2 (2)\).
+                                          \item \( 1 \leq \log (n_0) \leq \log (n)
+                                                \implies c_b n \log^2 n \geq T(n)\).
+                                    \end{enumerate}
+                              \end{proof}
+                        \item \( \therefore \forall n, c_a n \log^2(n) \leq T(n) \leq c_b
+                              n \log^2(n) \implies T(n) \in \Theta(n \log^2 n)\).
+                  \end{enumerate}
+            \end{proof}
+\end{enumerate}
+
+\newpage
+\section{Problem 2 (6 points) \textit{Quickersort}}
+Collaborated with: No one.
+
+\paragraph{\indent}
+As we saw, the randomized version of Quicksort is a wonderfully efficient and
+practical sorting algorithm. Indeed the expected number of comparisons it performs
+is within a small constant factor of best possible (although we've not yet seen the proof of the
+lower bound on the complexity of randomized sorting algorithms).
+\paragraph*{\indent}
+Nonetheless, in this exercise we'll see an algorithm that is even a bit better.
+\textit{Quickersort} works like this: Pick \textit{three} out of the n inputs, uniformly but without repetition.
+Determine the median of the three elements, then use it as the pivot. I.e., compare all elements
+against the pivot, then recursively run Quickersort on the two resulting sets of inputs.
+Performing an exact time analysis of the algorithm is a bit complicated but a “continuum
+limit” is not too bad and that's what you are to do in this exercise.
+\subsection{Part (a)}
+\subsubsection{Proposition}
+
+\paragraph{\indent}
+Letting \(xn\) denote the rank of the pivot, show that in the limit of large \(n\),
+\(x\) is distributed according to the probability density \(6x(1 - x)\) on \([0, 1]\).
+That is to say, for all \(0 \leq t \leq 1\),
+\(\Pr[x < t] \rightarrow \int_0^t  6y(1-y) \, \mathrm{d}y\).
+
+\subsubsection{Proof}
+\begin{proof}
+      \begin{enumerate}
+            \item In the case of a pool with size of large \(n\), the non-independence of the 3 draws we
+                  do is not going to be relevant, and we can consider each draw as
+                  independent.
+            \item The chance of drawing an entry with a rank of \(xn\) is uniformly
+                  distributed from (large) \(n\) elements in the pool, and as such is \(~
+                  1/n\).
+            \item Under our limiting assumption, 1/n goes to 0, and the chance of drawing
+                  an element with a smaller rank than \(xn\) is \((xn -1)/n\), so we can approximate
+                  the chance as \(x\).
+            \item The chance of drawing an element with a higher rank than \(xn\) is
+                  \((1-x)\), as there are \(1-x\) elements with a larger rank.
+            \item We have \(3! \) ways to choose the three draws.
+            \item \( \therefore \Pr[x] = 6 * (1/n) * x * (1-x) \), which reduces to \(
+                  (6x/n)(1-x) \).
+            \item Now we sum the probabilities over the range \([0,1]\) to find the
+                  probability that \(x < t\), and take the limit over large \(n\) to pull
+                  back out the integral \( \int_0^t{6x^{\prime}(1-x^{\prime})
+                  dx^{\prime}}\).
+            \item And thus the probability density function is \(6x(1-x)\) over \([0,1]\).
+
+      \end{enumerate}
+\end{proof}
+
+\subsection{Part (b)}
+\subsubsection{Proposition}
+\paragraph{\indent}
+Let \(T(n)\) be the expected number of comparisons performed
+by Quickersort on a worst-case input of size n. Explain why \(T(n)\) satisfies the recurrence
+\[T(n) \leq D*n + 2 \int_0^1  6x(1-x) T(xn) \, \mathrm{d}x, \]
+(I redefined the variable \(d\) in the proposition given to \(D\) for my own internal
+order) and I fix the value of \(D\) because the continuum limit allows me to drop off
+terms in the recurrence that are less than linear in \(n\).
+\subsubsection{Proof}
+\begin{proof}
+      \begin{enumerate}
+            \item \(T(xn)\) takes the place of \(x\) in the expected value of the probility density for
+                  the cases up to \(xn\)  \[\int_0^1  6x(1-x) T(xn) \, \mathrm{d}x.\]
+            \item \(T((1-x)n)\)  takes the place of \(x\) in the expected value of the probility density
+                  for the cases greater than \(xn\)  \[\int_0^1  6x(1-x) T((1-x)n) \, \mathrm{d}x\]
+            \item We can add these two integral cases together by recognizing they were a single integral
+                  that integrates \(\int_0^1  6x(1-x) (T((1-x)n)T(xn)) \, \mathrm{d}x\) as we have a worst
+                  case that needs to sort both arrays around the pivot \(xn\) and \((1-x)n\)
+            \item So we can represent them as
+                  \[2\int_0^1  6x(1-x) T(xn) \, \mathrm{d}x\]
+            \item \(D*n\) is the minimum time it takes to compares each element to the pivot, and since
+                  we treat comparison as an \(O(1)\) operation, and we have \(n\) elements, we find
+                  \(D*n=n\) and \(D=1\).
+      \end{enumerate}
+\end{proof}
+
+\subsection{Part (c)}
+\subsubsection{Proposition}
+
+\paragraph{\indent}
+Guess that \(T(n)\) is upper bounded by a function of the form \(nb(c + \log n)\) (here log is
+natural log). Solve the recurrence and show that it can be satisfied by taking the leading
+constant \(b = 12/7\)  improving on Quicksort's leading constant of 2. You may find the
+following definite integrals useful: \(\int_0^1 \! x^{2}(1-x) \, \mathrm{d}x = 1/12\)
+\(\int_0^1 \! x^{2}(1-x)\log x \, \mathrm{d}x = -7/144\)
+\subsubsection{Proof}
+\begin{proof} We will use the substitution method from the TA notes.
+      \begin{enumerate}
+
+            \item \begin{proof}
+                        Base Case n:
+                        \begin{enumerate}
+                              \item If we choose that \(c\) is picked such that \(n\) is
+                                    below our continuum limit assumption, than the upper
+                                    bound we set out to prove holds for the base case
+                                    \(n\) for such a \(c\).
+                        \end{enumerate}
+                  \end{proof}
+            \item \begin{proof}
+
+                        Inductive Case \(n < N\):
+
+                        \begin{enumerate}
+                              \item Let \(T(xn) = xn*b(c+\log (x n))\) and \(T(n) \leq (1)*n
+                                    + 12*\int_0^1 ! x^2(1-x)(nb(c+\log (xn)))\, \mathrm{d}x\)
+                              \item \( n + 12nb \int_0^1 (1-x) x^2 (c + \log (xn) ) \, dx\)
+                              \item \( n + 12nb \int_0^1 c(1-x) x^2  + (1-x) x^2 \log (xn)  \, dx\)
+                              \item \( n + 12nb (\int_0^1 c(1-x) x^2 \, dx + \int_0^1 (1-x) x^2 \log (xn) \, dx)\)
+                              \item \( n + 12nb (c \int_0^1 (1-x) x^2 \, dx + \int_0^1 (1-x) x^2 (\log(x) + \log(n)) \, dx)\)
+                              \item \( n + 12nb (c \int_0^1 (1-x) x^2 \, dx + \int_0^1 (1-x) x^2 \log(x) + (1-x) x^2 \log(n) \, dx)\)
+                              \item \( n + 12nb (c \int_0^1 (1-x) x^2 \, dx + \int_0^1 (1-x) x^2 \log(x) \, dx + \int_0^1 (1-x) x^2 \log(n) \, dx)\)
+                              \item \( n + 12nb (c \int_0^1 (1-x) x^2 \, dx + \int_0^1 (1-x) x^2 \log(x) \, dx + \log(n)\int_0^1 (1-x) x^2 \, dx)\)
+                              \item Now replace with the given helpful definite intergrals.
+                              \item \( n + 12nb (c (1/12) + (-7/144) + \log(n)(1/12))\)
+                              \item \( n + nbc - nb(7/12) + nb \log(n)\)
+                              \item \( n + \frac{1}{12} b n (12 c+12 \log (n)-7)\)
+                              \item If we sub in \(b=12/7\) we get \( n + \frac{1}{12} b n (12 c+12 \log (n)-7)\)
+                              \item \(T(N) \leq n  + (144/7)( (1/12) nc - (7/144)n
+                                    +(1/12)n \log (n)         )\)
+                              \item \(T(N) \leq (12/7) n (c+ \log (n))\)
+
+                              \item \( T(n) \leq 12/7 n (c + Log[n])\)
+
+                        \end{enumerate}
+
+                  \end{proof}
+
+            \item Thus we see that using \(b=12/7\) provides a more favorable leading constant that improves
+                  upon Quicksort's.
+      \end{enumerate}
+\end{proof}
+
+
+
+\newpage
+\section{Problem 3 (6 points)}
+Collaborated with: No one
+
+\subsection{Proposition}
+Let \(\Sigma \) be a constant-size alphabet. A string \(y = (y_1,\ldots, y_n)\)
+\(y_i \in \Sigma \)  has \(x = (x_1,\dots, x_m)\) as a subsequence if there
+are indices \(a_1 < \cdots < a_m\) such that \(x_j = y_{a_j}\)
+for all \(1 \leq j \leq m\)
+A palindrome over \(\Sigma \) is a string \(x = (x_1,\dots, x_m), m \geq 0\)  such that
+\(x = (x_m,\dots, x_1)\)
+Devise an algorithm that on input \(y = (y_1,\dots, y_n)\) returns the length of its longest
+subsequence that is a palindrome. For full credit your algorithm should run in time \(O(n^2)\)
+
+\subsection{Algorithm}
+\paragraph{\indent}We will use DP to populate a table such that a specific
+final entry in the table contains the length of the longest subsequence that is a palindrome.
+
+\paragraph{\indent}Construct a square two dimensional table for DP \(LSP[i,j]\)
+with \(n^2\) entries and dimensions of \(n \times n\)  and initialize each entry with \(0\)
+We then initialize the diagonal \(LSP[i,i]\) to 1 to represent the palindrome of length 1 at each
+point.
+To populate the table we are going to loop \(n^2\) times iterating \(i\) and \(j\) from
+\(i=1\) through \(i=n\)  and from \(j=1\) to \(j=n\)
+We set the values of \(LSP[i,j]\) according to the following if statements, applied in the order given:
+\begin{enumerate}
+      \item If \(i=j\)  then set \(LSP[i,j] \leftarrow 1\)
+      \item Else-If \((i < j)\) AND \((y_i == y_j)\)  then set \(LSP[i,j] \leftarrow LSP[i+1,j-1]+2\)
+      \item Else-If \((i < j)\) AND \((y_i \neq y_j)\)  then set
+            \(LSP[i,j] \leftarrow MAX(LSP[i+1,j],LSP[i,j-1])\)
+      \item Else-If \((i > j)\)  then set \(LSP[i,j] \leftarrow 0\)
+\end{enumerate}
+After we complete the \(n^2\) iterations through the loops we query the value at \(LSP[1,n]\) for
+the length of the Longest Subsequence Palindrome of our input string \(y\)
+\begin{proof}[Proof of Correctness]
+      \begin{enumerate}
+            \item We define a palindrome over our alphabet \(\Sigma \) as a string
+                  \(x = (x_1,\dots, x_m), m \geq 0\)  such that \(x = (x_m,\dots, x_1)\)
+            \item I assert that the number at \(LSP[i,j]\) is the length of the longest palindrome in
+                  \((y_i,\dots,y_j)\in y\)
+            \item If \(LSP[i,j] == 0\)  then the entry has only been initialized.
+            \item If our (sub) string has a length of \(1\)  it is a palindrome of the same length,
+                  and so we can conlude that \(LSP[i,j]\) should equal \(1\) if \(i == j\) (our 1st rule).
+            \item Define a helper function \(L\) that takes a string \(y\) and two indexes \(i,j\)
+                  and recursively applies the aforementioned rules to populate our DP table by
+                  finding the LSP \(\in y\)
+            \item \(i\) must be less than \(j\)  as \(i\) is the start of a subsequence and \(j\) the end.
+                  We don't allow negative lengths, so if we are given such an arrangement set
+                  \(LSP[i,j] \leftarrow 0\)  and we can show negative lengths never enter by proving our rules.
+            \item Assume \(i < j\)  the length of \((y_i,\dots,y_j)\) must be \(\geq 2\)
+            \item
+                  \begin{proof}[1st Lemma: Rule 2]
+                        \begin{enumerate}
+                              \item We will use induction to prove our second rule is
+                                    correct.
+                              \item Base Cases: \begin{enumerate}
+                                          \item If we have a string of length 2 as ''11'', then \(LSP[1,2]\) should
+                                                be equal to \(LSP[2,1]+2\) which is \(0+2=2\)
+                                          \item If we have a string of length 3 as ''121'', then \(LSP[1,3]\)
+                                                should be equal to \(LSP[2,2] + 2\) which is \(1+2=3\)
+                                          \item \(LSP[2,1]\) may not be \(<0\)  otherwise we have a contradiction.
+                                    \end{enumerate}
+                              \item Induction Cases: \begin{enumerate}
+                                          \item We begin with assuming that this algorithm
+                                                is valid for our base cases with small \(n\)
+                                                for some \(y = (y_1,\dots,y_n)\)  and that the LSP of
+                                                \(y\) is \(p = (p_1,\dots,p_m)\)
+                                          \item If we insert some character \(c \in \Sigma
+                                                \) at both the start
+                                                and the end of \(y\)
+                                                then we have constructed a new string \(y^{\prime} = (y^{\prime}_1,\dots,y^{\prime}_{n+2})\)
+                                          \item If we insert the same \(c\) at the beginning and end of \(p\) we also now have
+                                                \(p^{\prime} = (p^{\prime}_1,\dots,p^{\prime}_{m+2})\)
+                                          \item Observe that \(y = (y^{\prime}_2,\dots,y^{\prime}_{n+1})\) and \(p = (p^{\prime}_2,\dots,p^{\prime}_{k+1})\)
+                                          \item Because \(p\) is already a palindrome, we can see that \(p'\) has the property
+                                                that \(p^{\prime}_i = p^{\prime}_{(m+2)+1-i}\) where \((2 \leq i \leq m+1)\)  and that since
+                                                \(p^{\prime}_1 = p^{\prime}_{m+2}\) we can see that \(p^{\prime}_i =p^{\prime}_{(m+2)+1-i}\) where
+                                                \((1 \leq i \leq m+2)\)
+                                          \item Thus we see that \(p^{\prime}\) is also a palindrome.
+                                          \item Now we need to check if \(p^{\prime}\) is the longest subsequence
+                                                palindrome of \(y^{\prime}\)
+                                                Start by assuming that it is not the longest.
+                                          \item If \(p^{\prime}\) is not the longest subsequence palindrome, then we can find some
+                                                palindrome \(p^{\prime\prime} \in y^{\prime}\) that has a bigger length than \(p^{\prime}\)  which necessitates
+                                                that \(p^{\prime\prime}\) is at least 3 characters longer than \(p\)
+                                          \item If there is a \(c\) at the beginning and end of \(p^{\prime\prime}\)  then \(p^{\prime\prime}\) can remove
+                                                the two \(c\) characters at the beginning and end and find a palindrome \(\in y\)
+                                                that has a length greater than \(p\)  Contradiction!: \(p\) was the LSP of \(y\)
+                                          \item If there is no \(c\) at either the beginning or the end of \(p^{\prime\prime}\)  and \(p^{\prime\prime}\)
+                                                is \(\in y\)  \(p^{\prime\prime}\) must be the same length as \(p\)  and \(p^{\prime\prime}\) has a length
+                                                less than that of \(p^{\prime}\)  Contradiction!: \(p^{\prime\prime}\) is supposed to be an LSP \(\in y^{\prime}\)
+                                          \item If there is only one \(c\) at either the beginning or the end, then
+                                                if \(p^{\prime\prime}\) has \(c = y^{\prime}_1 = p''_1\) but doesn't have \(c = y^{\prime}_{n+2} = p^{\prime\prime}_{m+3}\)
+                                                then the length of \(p^{\prime\prime}\) must be 1 if there is no \(c \in (y'_2,\dots,y'_{n+1})\)
+                                                If there is a \(c \in (y^{\prime}_2,\dots,y^{\prime}_{n+1})\) we can label the index of some \(c\)
+                                                as \(k, y^{\prime}_k\)  There must exist a palindrome \(p^{\prime\prime\prime} \in (y^{\prime}_1,\dots,y^{\prime}_k)\)  and
+                                                \(p'' = y^{\prime}_1 + p^{\prime\prime\prime} + y^{\prime}_k\)  and \(p\prime\prime\prime \in (y'_2,\dots,y^{\prime}_{n+1})\)  We assumed
+                                                that \(p\) is an LSP \(\in
+                                                (y^{\prime}_2,\dots,y^{\prime}_{n+1})\)  thus \(p\prime\prime\prime \)
+                                                isn't longer than
+                                                \(p\)  and thus the length \(|p''| = |p\prime\prime\prime| + 2\) is less than or equal to
+                                                \(|p^{\prime}| = |p| + 2\)  If the tail end element of \(p^{\prime\prime}\) is \(c\)  then this plays
+                                                out the same for \(p^{\prime\prime}_1 =
+                                                c\) by symmetry, and observe that
+                                                \(\nexists p^{\prime\prime}\)
+                                                where
+                                                \(|p^{\prime\prime}| > |p^{\prime}|\)
+                                          \item Thus we can see that if \(p\) is an LSP \(p \in y\)  then
+                                                \(p^{\prime}\) is an LSP \(p^{\prime} \in y'\)
+                                          \item By induction we can see that if the application of this rule holds for
+                                                strings of length \(n\)  then it should also hold for strings of length \(n+2\)
+                                    \end{enumerate}
+                        \end{enumerate}
+                  \end{proof}
+
+            \item
+                  \begin{proof}[2nd Lemma: Rule 3]
+                        \begin{enumerate}
+                              \item We want to prove that if \((i < j)\) AND \((y_i \neq y_j)\) then the length \(|y'|\)
+                                    of the LSP \(\in y' = (y_i,\dots,y_j)\) is equal to \(|y'| =
+                                    MAX(L((y_{i+1},\dots,y_j),i+1,j),L((y_i,\dots,y_{j-1}),i,j-1))\).
+                              \item Base Cases:
+                                    \begin{enumerate}
+                                          \item If we have some \(y = ('1', '2')\) and \(|y|=2\)  then we can see that
+                                                \(LSP[1,2] = MAX(LSP[1,1],LSP[2,2]) = MAX(1,1) = 1\).
+                                          \item if \(|y|=3\) and \(y = ('1','1','2')\)  then we can see that \(L(('1','1'),1,2)=2\)
+                                                and \(L(('1','2'),2,3)=1\)  thus the LSP of \(y\) is 2.
+                                    \end{enumerate}
+                              \item Induction Cases:
+                                    \begin{enumerate}
+                                          \item Assume we have a string \(y = (y_1,\dots,y_n)\) where \(y_1 \neq y_n\).
+                                          \item Assume our algorithm is valid \(\forall y\) where \(|y| \leq n-1, n \geq 2\).
+                                          \item Assume \(p\) is an LSP \(p \in y = (y_1,\dots,y_{n-1})\).
+                                          \item Assume \(p'\) is an LSP \(p' \in y' = (y_2,\dots,y_n)\).
+                                          \item Assume \(p''\) is an LSP \(p'' \in y = (y_1,\dots,y_n)\).
+                                          \item Thus, since \(y_1 \neq y_n\)  then \(p''\) must not have \(y_1\) as its head
+                                                and \(y_n\) as its tail. So \(p'' \in (y_1,\dots,y_{n-1})\) OR \((y_2,\dots,y_n)\).
+                                          \item If \(p'' \in (y_1,\dots,y_{n-1})\)  then \(p'' == p\).
+                                          \item If \(p'' \notin (y_1,\dots,y_{n-1})\)  then \(p'' \in (y_2,\dots,y_n)\) and
+                                                \(p'' == p'\).
+                                          \item We can now see that \(|p''|\) must be the \(MAX(|p|,|p'|)\) such that
+                                                \(p''\) is an LSP \(p'' \in y\).
+                                    \end{enumerate}
+                              \item Thus, by induction, we may see that we have proved our proposition for Rule 3.
+                        \end{enumerate}
+                  \end{proof}
+            \item We have now proved that each of our rules maintains our invariants, and generates
+                  the desired DP table when executed for a string of any size \(n\).
+      \end{enumerate}
+\end{proof}
+
+\begin{proof}[Complexity Analysis]
+      \begin{enumerate}
+            \item The runtime of populating the initial DP table is \(O(n^2)\).
+            \item The runtime of populating the DP table \(LSP\) is sped up by memoizing
+                  prior calls inside of the DP table, reducing them to table lookups which are \(O(1)\).
+            \item The Worst Case situation requires we compute \(n*(n + 1)/2\) elements in the table, because it is
+                  upperbounded by our invariant \(1 \leq i \leq j \leq n\).
+            \item For each entry we need to then calculate recursively, the amount of work
+                  is constrained to at most 4
+                  applications of the prior described rules, and is followed by two
+                  \(O(1)\) runtime
+                  lookups in the DP table, and the subsequent maximization on those two values.
+            \item Thus the runtime of computing each entry of the table is in \(O(1)\),
+                  and thus with \(n^2\) entries
+                  the runtime for filling our table is in \(O(n^2)\) as well.
+            \item Adding these two runtimes together we get \(O(C * n^2)\) for our total runtime which is in
+                  \(O(n^2)\).
+      \end{enumerate}
+\end{proof}
+
+
+\end{document}
+

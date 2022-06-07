@@ -1,0 +1,476 @@
+% preamble
+\documentclass{article}
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\setlength{\headheight}{12pt}
+\usepackage[headsep=1cm,total={6.5in, 8.5in}]{geometry}
+
+% useful packages
+\usepackage{amsmath,amssymb, amsthm}
+
+% add your own packages here
+\usepackage{verbatim}
+% \usepackage[style=verbose]{biblatex}
+\usepackage{enumitem}
+
+\usepackage{tikz}
+
+\usepackage{marvosym}
+% \usepackage{filecontents}
+% \begin{filecontents}{myreferences.bib}
+%     @online{foo12,
+%       year = {2012},
+%       title = {footnote-reference-using-european-system},
+%       url = {http://tex.stackexchange.com/questions/69716/footnote-reference-using-european-system},
+%     }
+% \end{filecontents}
+
+% % Save the bib to disk (or update it).
+% \addbibresource{myreferences.bib}
+
+% commands for header, fill in the appropriate values
+\newcommand{\codename}	{Snoop Matroidd} % type name here
+\newcommand{\settitle}	{Set 7} %type set title here (ex. Problem Set 3, Midterm)
+\newcommand{\latesub}	{No} % type yes/no indicating late submission
+
+% a few helpful commands 
+\newcommand{\RR}{\mathbb{R}} % typing \RR prints the Blackboard R used for Real Numbers
+\newcommand{\NN}{\mathbb{N}} % typing \NN prints the Blackboard N used for Natural Numbers
+\newcommand{\ZZ}{\mathbb{Z}} % typing \ZZ prints the Blackboard Z used for Integers
+
+% construct your own commands here
+
+\newcommand{\GCD}{\textrm{GCD}}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+
+% commands for header, don't adjust
+\begin{document}
+\thispagestyle{empty}
+\begin{center}
+      \framebox[6.5in]{
+            \vbox{
+                  \vspace{2mm}
+                  \makebox[6.3in][l]{\textbf{CS~38~~~Algorithms}\hfill \textbf{\today}}
+                  \vspace{4mm}
+                  \makebox[6.5in][c] {\Large \hfill \settitle{\hfill}}
+                  \vspace{2mm}
+                  \makebox[6.3in][l] {\textbf{Codename: } \codename{ \hfill \textbf{Late Submission:}
+                              \latesub}}
+                  \vspace{2mm}
+            }
+      }
+\end{center}
+\vspace*{1mm}
+\pagestyle{fancy}\lhead{Codename: \codename} \chead{\settitle}
+\rhead{\today}
+
+% insert solution here
+\section{Problem 1 (6 points)}
+Collaborated with: No Collab
+
+\subsection{Proposition}
+Let \(A\) be an \(n \times m\) real matrix, and \(c \in \RR^m\). Use LP duality to show
+that exactly one of the following systems of inequalities is feasible. (The first system
+is in terms of a vector of variables \(x \in \RR^m\), the second system is in terms of a
+vector of variables \(y \in \RR^n\). We use \Cross{} to indicate transpose, so here
+everything with a \Cross{} is a row vector.)
+\[Ax \leq 0\]\
+\[c^{\text{\Cross{}}} x > 0\] (1)
+\[y^{\text{\Cross{}}} A = c^{\text{\Cross{}}} \]
+\[y^{\text{\Cross{}}} \geq 0 \] (2)
+
+% \begin{enumerate}[label= (\alph*)]
+%       \item 
+% \end{enumerate}
+
+\subsection{Proof}
+\begin{proof}
+      \begin{enumerate}
+            \item To begin we need to first demonstrate that satisfying both sets of
+            inequalities is not feasible. 
+            \item Assume that it is feasible to satisfy both systems so we can prove its
+            impossible via contradiction. 
+            \item Let \(a, b\) be possible solutions that solve each set of inequalities
+            each, \(a\) for (1), \(b\) for (2). 
+            \item By construction, we know that \(a\) provides a feasible solution for the
+            first set of inequalities. So we know that \(A x \leq 0\), and that
+            \(0 < c^{\text{\Cross{}}}\).
+            \item If we then multiply the first inequality from the left with
+            \(y^{\text{\Cross{}}}\), observe that because \(0 \leq y^{\text{\Cross{}}}\)
+            we can rewrite it as \(0 \geq y^{\text{\Cross{}}} A x \).
+            \item Because the second set of inequalities states that \(y^{\text{\Cross{}}}
+            A = c^{\text{\Cross{}}}\), we can also observe that \(0 \geq
+            c^{\text{\Cross{}}} x\).
+            \item Contradiction! We know from the first set of inequalities that
+            \(c^{\text{\Cross{}}} x > 0\).
+            \item Therefore we have proved that both systems of inequalities cannot be
+            satisfied simultaneously. 
+            \item Using LP Duality\footnote{Lec17H.pdf} we can show that one of the
+            systems must be feasible. To do this we will construct a set of linear
+            programs that share the feasible regions with the set of inequalities in
+            question. 
+            \item To begin, transpose the second (2) set of inequalities, such that we now
+            have \(A^{\text{\Cross{}}}y = c\) and \(0 \leq y\). In this case 0 is a row of
+            zeroes. 
+            \item Convert the transposed set of inequalities into a standard primal linear
+            program\footnote{TA Notes 11.1} of the form 
+            \[ (I_1) = \begin{cases} 
+                  \max & 0^{\text{\Cross{}}} y \\
+                  s.t. & A^{\text{\Cross{}}} y \leq c  \\
+                  & - A^{\text{\Cross{}}} y \leq -c  \\
+                  & 0 \leq y
+               \end{cases} = \begin{cases}
+                  \max & 0^{\text{\Cross{}}} y \\
+                  s.t. & \begin{bmatrix} A^{\text{\Cross{}}} \\ - A^{\text{\Cross{}}}
+                  \end{bmatrix} y \leq \begin{bmatrix}
+                        c \\ -c
+                  \end{bmatrix}  \\
+                  & 0 \leq y
+               \end{cases}
+            \]
+            \item The above linear program has by construction the same set of feasible
+            areas as inequality (2). 
+            \item Now writing out the Dual Linear Program\footnote{TA Notes 11.7} of it we
+            get \[
+              (D) = \begin{cases}
+                    \max &  [c^{\text{\Cross{}}} | -c^{\text{\Cross{}}}] x^{\prime} \\
+                    s.t. & [0 | 0] \leq [A | -A] x^{\prime} \\
+                  & 0 \leq x^{\prime}
+              \end{cases}    
+            \]
+            \item To prove that one of the inequalities must be feasible assume that both
+            sets of inequalities are infeasible. 
+            \item Because the inequalities for (2) is infeasible under this assumption,
+            our primal linear program must also be infeasible. 
+            \item Observe that via the theorem of LP Duality\footnote{TA Notes 11.9}, if
+            the primal LP is infeasible than the dual LP must also be either unbounded or
+            otherwise infeasible. 
+            \item Contradiction! Observe that the dual LP is trivially feasible in the
+            case that \(x^{\prime} = 0\). Because the dual must be feasible, then if we were bounded the primal LP
+            bust also be feasible. 
+            \item Therefore the dual must be unbounded, and thus \([c^{\text{\Cross{}}} |
+            - c^{\text{\Cross{}}}] x^{\prime} = c^{\text{\Cross{}}}(x_1 - x_2) < 0\)
+            \item If we multiply the above inequality by -1, then observe that \(0 <
+            c^{\text{\Cross{}}}(x_2 - x_1)\).
+            \item Contradiction! If we multiply \(x = x_1 - x_2\) by
+            \(c^{\text{\Cross{}}}\) then this number must be greater than 0, and therefore
+            the (1) set of inequalities must be feasible. 
+            \item Thus one of the inequalities must be feasible if the other isn't, and
+            since both can't be feasible at once there must only be one feasible sets of
+            inequalities. 
+      \end{enumerate}
+\end{proof}
+
+
+\newpage
+\section{Problem 2 (6 points)}
+Collaborated with: No One
+
+\subsection{Proposition}
+Given an undirected graph \(G = (V, E)\), its edge connectivity \(N(G)\) is the least
+\(k\) such that there are \(k\) edges whose removal disconnects \(G\). (\(N(G) = 0\) for
+graphs that are not already connected; \(N(G) = 1\) for trees.) Show how to compute
+\(N(G)\) by solving at most \(|V|\) max-flow problems on capcacitated networks with
+\(O(|V|)\) vertices and \(O(|E|)\) edges. 
+
+Note, capacitated networks are allowed to have antiparallel edges --- in keeping with the
+definitions in lecture. (And in contrast with the definitions for flow networks (which is
+the same thing as capacitated networks) in the CLRS textbook.)
+
+\subsection{Algorithm}
+We are going to define an algorithm that relies upon some efficient way to solve the
+max-flow problem such as the Ford-Fulkerson algorithm defines in the TA Notes\footnote{TA
+Notes 10.13}
+\begin{enumerate}
+      \item Choose some vertex \(s \in V\) to begin with.
+      \item Construct the \(n - 1=
+      |V| -1\) capacitated networks that we let be \(G^{\prime} = (V, C, s, t) \forall t
+      \neq s \in V\) 
+      \item Let the capacity function be equal to \(1 \forall e \in C\). Observe that this
+      is just \(G\) but with all the edge capacities fixed at \(1\), and with alternate
+      sinks and undirected edges replaced with two, two-way, directed edges. 
+      \item Now calculate the value of max-flow Val\((f)\) for each and every graph
+      \(G^\prime \) using our chosen max-flow algo\footnote{TA Notes 10.13 Ford-Fulkerson}.
+      Let the value for the max-flow over some \(G^\prime \) be M\((f,t)\).
+      \item Return the value for \(N(G)\) equal to the minimization over \(M(f,t)\) such
+      that \(s \neq t\), the minimum of all the max-flows we calculated for the
+      capacitated networks. 
+\end{enumerate}
+
+\subsection{Proof of Correctness}
+\begin{proof}
+\begin{enumerate}
+      \item  To prove that our function \(N(G)\) does correctly calculate the edge
+      connectivity, start by assuming that \(N^{\prime}(G)\) is the correct edge
+      connectivity function. 
+      \item Let \(Q\) be the set of all \(N^\prime (G)\) edges that happen to disconnect
+      the (connected) graph of \(G\).
+      \item We may now assume, without loss of generality, that the source \(s\) must be
+      half of the graph we disconnected. 
+      \item Therefore, we can assume that there must also be a corresponding vertex in the
+      other sub-graph that we can call \(t\). 
+      \item Because these are two disconnected graphs, we know that \(s \neq t\), and can
+      thus compute the flow between \(s\) and \(t\) in the capacitated and connected
+      version of the graph. 
+      \item Let \(G^\prime = (V, C, s, t) \exists t\), then calculate its max-flow
+      \(M(f,t)\). 
+      \item We know from Theorem 10.7\footnote{TA Notes 10.7 } that the max flow is also
+      the minimum capacity over the set of all possible cuts across \(s-t\). 
+      \item Bececause we set our capacities as equal to 1 for all the edges, the minimum
+      capacity is trivially just the length of the path in the number of edges that cross
+      a cut. 
+      \item We know the minimum size of the cut must be upper bounded by the edge
+      connectivity \(N^\prime (G)\) because we defined \(N^\prime(G)\) as the connectivity
+      that splits the graph into two disconnected graphs with the source and the sink
+      being apart. 
+      \item Thus we also know that the max-flow \(M(f,t)\) must be upper bounded by
+      \(N^\prime (G)\) as well. 
+      \item Because defined \(N(G)\) as the minimization over the max-flow, we can see
+      that \(N(G) \leq M(f,t)\), and that \(N(G) \leq M(f,t) \leq N^\prime (G)\).
+      \item We may observe that \(N(G)\) cannot ever be less than \(N^\prime (G)\), or
+      this would violate Theorem 10.7 and there is a cut where \(N(G) < N^\prime (G)\).
+      \item By the definition of edge connectivity, we know it must have the least \(k\)
+      edges that disconnects the graph \(G\). 
+      \item Therefore, if there is a cut with a size smaller than the correct
+      edge-connectivity, then we could remove an edge from \(N^\prime (G)\) to get a
+      smaller connectivity that would disconnect the graph. 
+      \item Contradiction! We defined \(N^\prime (G)\) as the edge connectivity, which by
+      definition in order for the inequality to ever hold they must actually be equal such
+      that \(N(G) = N^\prime (G)\), and \(N(G)\) is the optimal minimum over the max flows
+      of the capacitated graphs and the edge connectivity. 
+\end{enumerate}
+\end{proof}
+
+\subsection{Complexity Analysis}
+\begin{proof}
+\begin{enumerate}
+      \item Note that every capacitied network \(G^{\prime}\) constructed has \(n = |V|\)
+      vertices, and \(m=|E|\) edges, as we defined it to be \(G\) but where each edge
+      capcity has been fixed to \(1\). 
+      \item Therefore the capacitated networks must each have \(O(n)\) vertices and
+      \(O(m)\) edges. 
+      \item Thus, because there are \(n-1\) capacitated networs, and because we defined them
+      as all the other sinks that arent the same as some source, we can say that the
+      max-flow algorithm we chose only has to solve at most \(n= |V|\) max-flow problems.  
+\end{enumerate}
+\end{proof}
+
+\newpage
+\section{Problem 3 (6 points)}
+Collaborated with: No One
+
+\subsection{Proposition}
+As discussed in class, there are polynomial-time algorithms (in particular, Khachiyan's
+ellipsoid algorithm) to solve any linear program (LP). (``Solve'' can mean either of two
+things: either to find an optimum vector ``\(x\)'', or merely to decide whether the
+feasible region is nonempty; but these problems are easily poly-time reducible to each
+other, so it doesn't matter which notion you mean.)
+
+Say that the matrix \(A\) and vectors \(b, c\) are \textit{integer} if all their entries
+are integer. An integer triple \((A, b, c)\) defines an LP in standard form (maximize
+\(c^{\text{\Cross{}}} x \) s.t. \(Ax \leq b\)) (providing the dimensions match appropriately); but
+it can also be a regarded as defining an \textit{integer linear program} (ILP), in which
+we make the additional requirement that the solution vector \(x\) is an integer. 
+
+Show that an LP defined by integer \((A, b, c)\) may have a unique optimum at \(x\) which
+is not integer, and for which \(c^{\text{\Cross{}}} x\) is not integer. 
+
+\subsection{Proof}
+\begin{proof} An LP defined by integer \((A, b, c)\) may have a unique optimum at \(x\) which
+      is not integer, and for which \(c^{\Cross{}}x\) is not integer.
+      \begin{enumerate}
+            \item We will prove via construction that there exists an integer \((A, b,
+            c)\) that has a unique optimum about \(x\) that it itself and
+            \(c^{\text{\Cross{}}} x\) are not integers.
+            \item Using a standard Integer Linear Program\footnote{TA Notes 11.12} observe
+            we have to abide by a constraint that stipulates that \(0 \leq x\).
+            \item Let \[A = \begin{bmatrix}
+                  4 & 0 \\
+                  0 & 4
+            \end{bmatrix}\] 
+            \[b = \begin{bmatrix}
+                  1 \\ 1
+            \end{bmatrix}\]
+            \[c = \begin{bmatrix}
+                  1 & 1
+            \end{bmatrix}\]
+            \item As a result of the above construction, we have the constraints that \( 0
+            \leq x_1 \leq 1/4\), \(0 \leq x_2 \leq 1/4\).
+            \item We can choose \(c^{\text{\Cross{}}} x = x_1 + x_2\) to maximize over \(x
+            = \begin{bmatrix}
+                  1/4 \\
+                  1/4
+            \end{bmatrix}\), however observe that the maximization is not an integer, and
+            that \(c^{\text{\Cross{}}} x = 1/4 + 1/4 1/2\) is also not an integer
+            solution. 
+            \item We know the above maximizations are optimal because
+            \(c^{\text{\Cross{}}} x\) is proportional to both values, and they are
+            independent, so maximizing over each \(x\) will also maximize
+            \(c^{\text{\Cross{}}} x\).
+            \item Therefore we've proved that a linear program defines by the given
+            integer may actually have a unique non integer maximization about \(x\). 
+      \end{enumerate}
+
+\end{proof}
+
+\newpage
+
+
+\section{Problem 4 (6 points)}
+Collaborated with: No One
+
+\subsection{Proposition}
+In this problem we are going to learn about an interesting connection between
+shortest-paths problems and flow problems. One note however: in our flow problem, the
+edges will have unbounded capacities. So while the definition of an \(s-t\) flow here is
+exactly what you have seen in class, there is no concept here of a max-flow. The important
+thing we do retain is conservation of flow at internal vertices. 
+
+We are given a directed, non-negatively weighted graph \(G = (V, E, w, s, t)\) with
+``start'' node \(s\) and ``terminating'' node \(t\). As usual \(w: V \times V \rightarrow
+\RR_+ \cup \{ \infty \} \), with \(\infty \) corresponding to the absence of an edge. 
+
+\begin{enumerate}[label= (\alph*)]
+      \item Show that the problem of finding the length of a shortest \(s-t\)-path is
+      equivalent to the problem of finding the minimum of \(\sum_{(u,v) \in E} w(u,v)
+      f(u,v)\) over \(s-t\) flows \(f\) having Val\((f) = 1\).
+      \item Write the latter problem as a linear program. Show that its dual can be
+      written as \[ 
+            \begin{array}{c}
+            \text{maximize }  x_t - x_s \\ 
+            \text{subject to }  x_v - x_u \leq w(u,v) \forall (u,v) \in E
+      \end{array}
+            \]
+      What does this have to do with the ``lifting a handkerchief'' intuition for
+      single-source shortest path algorithms for non-negatively weighted graphs? 
+\end{enumerate}
+\subsection{Part A}
+\begin{proof} The length of a shortest \(s-t\) path is equivalent to the problem of
+finding the minimum\dots
+      \begin{enumerate}
+            \item In order to prove that these problems are equivalent we shall
+            demonstrate that a solution to one provides a feasible solution to the other. 
+            \item If we have the length of the shortest \(s-t\) path, then we need to show
+            it also provides the minimum over the sum  \(\sum_{(u,v) \in E} w(u,v)
+            f(u,v)\). 
+            \item Let the minimum cumulative weight route through \(s-t\) be defined as
+            \(r\). 
+            \item Let \(f(u,v) = 1 \forall (u,v) \in r\) and \(f(u,v) = 0 \forall (u,v)
+            \notin r\). 
+            \item For the sake of the construction, and without loss of generality, for
+            the flow \(f\) let
+            Val\((f) = 1\) and let \(\sum_{(u,v) \in E} w(u,v)f(u,v)\) be equal to the
+            length of the shortest route. 
+            \item For other flows \(f^{\prime}\) we need now demonstrate that
+            \(\sum_{(u,v)\in E}w(u,v)f(u,v) \leq \sum_{(u,v)\in E}w(u,v)f^{\prime}(u,v)\)
+            for these alternative flows. 
+            \item For this altrernative flow, there must be a flow going along route
+            \(r^{\prime}\) that is not \(r\) but also traverses from \(s\) to \(t\). 
+            \item Since we know that \(r\) is the minimum cumulative weight route from
+            \(s\) to \(t\), then changing from route \(r^{\prime}\) to \(r\) must slightly
+            decrease \(\sum_{(u,v) \in E} w(u,v) f^{\prime} (u,v)\). 
+            \item Therefore an \(f\) that is a flow that optimally minimizes the sum over
+            \(w\) and \(f\) must also give us the minimum of \(\sum_{(u,v) \in E} w(u,v) f
+            (u,v)\).
+            \item To show that this minimum over \(f\) provides the weight of the shortest
+            route, observe that we may seperate the flow into pieces of unique paths over
+            the whole graph, p, and with a continuous flow greater that is not 0. 
+            \item Each sub route must have the same weight or we could decrease the
+            summation by moving to a route with a lower weight than the one we're
+            currently on. 
+            \item No route between s and t can have a lower weight than any of the paths
+            in p. Therefore the paths in p must be a subset of the lead cumulative weight
+            paths between s and t, and since all paths share the same weight, than we can
+            go through any path without changing the overall summation over \(f\). 
+            \item Now since we showed that the sum \(\sum_{(u,v) \in E} w(u,v) f(u,v)\)
+            for our flow \(f\) is equal to the cumulative weight of an optimally minimal
+            length route between s and t, we know that \(f(u,v) = 1\) for edges in the
+            route, and 0 for any other edge. 
+            \item Since the flow minimizes the summation we have a minimum for the sum for
+            the case where Val\((f) =1\), and this is the length of the shortest route
+            between s and t. 
+            \item Thus, having shown that the solution for one of these problems provides
+            the solution to the other, we have demonstrated that the shortest path problem
+            is equivalent to determining the optimally minimal sum \(\sum_{(u,v) \in E}
+            w(u,v) f (u,v)\) for flows with a value equal to 1. 
+      \end{enumerate}
+\end{proof}
+
+\subsection{Part B}
+\begin{proof}
+\begin{enumerate}
+      \item In order to rewrite our summation over \(f\) in the form of a linear program,
+      set \(c = [-w(u,v)]\) for every pair of (ordered) vertices of the form \((u,v) \in V
+      \times V\), and let \(x = [f(u,v)]\) in the same vertex universe.
+      \item Let \(A = n \times \begin{bmatrix}
+            V_1 & V_2 & \ldots V_n \\
+            \ldots \\
+            V_n
+      \end{bmatrix}\) Where every row will contain a vertex \(q\) and every column \(y\)
+      maps to an ordered tuple of vertices in our vertex universe of the form \((u,v)\).
+      \item The entry of this matrix at \(A_{i,j} = 0\) in the case that edge \(y\) does
+      not contain the vertex \(q\), and will be 1 if there is an edge of the form
+      \((q,v)\) for some \(v \in V\), and will be \(-1\) if the edge has a form like
+      \((v,q)\). 
+      \item Let \(j\) be a vector with a length of \(n\) that is zero at all points except
+      for an entry \(s = 1\) that corresponds to the source of graph \(G\), and a value of
+      \(t= -1\) at the point corresponding to the sink. Let all values of \(q\) be
+      non-negative to eliminate the possibility of any negative flows from the system. 
+      \item We want to maximize \(c^{\text{\Cross{}}}x\) when under the constraint that
+      \(Ax \leq j\), and we should observe that \(c^{\text{\Cross{}}}x = - \sum_{(u,v)\in
+      E} w(u,v) f(u,v)\) as we are negating the original minimization optimization over
+      that sum. 
+      \item Observe that the aforementioned flows are now constrained by \(Ax\leq j\) when
+      we set Val\((f) = 1\).
+      \item We can then rewrite the inequality constraint \(Ax \leq j\)at row \(q\) to be
+      \(\sum_{v \neq q} f(q, v) - \sum_{v \neq q} f (v,q)\leq j_q\). 
+      \item When \(q = s\) the constraint that the flow from the source be bounded by
+      \(1\) is imposed, as \(j_s = 1\). When \(q = t\) the flow towards the sink must be
+      bounded on the lower end by \(1\) because \(j_t = -1\).
+      \item When \(q \neq s, q \neq t\), observe that there is a constraint that the
+      inflow in must be (net) at least as large as the (net) outflow. 
+      \item Therefore the total gross flow cannot increase at vertices that are neither the
+      source or the sink, and it cannot decrease either because of the constraints related to 1
+      we enumerated earlier on the net flows. 
+      \item Therefore we can now see that flow must be conserved amongst every vertex in
+      the interior of the path from \(s\) to \(t\).
+      \item Because flow must be conserved, we know the flow from the source and towards
+      the sink must be equal to \(1\). 
+      \item Therefore \(A x \leq j\) acts on a constraint on a feasible path where
+      Val\((f) = 1\). 
+      \item Therefore when we maximize \(c^{\text{\Cross{}}}x\) with regards to the
+      constraint \(A x \leq j\) we can now observe it is functionally identical to
+      determining the minimum of the summation \(\min \sum_{(u,v)\in E} w(u,v) f(u,v)\)
+      along the path with the aforementioned flow constraint of 1. 
+      \item Now we can convert this linear program to its dual, with \( \min
+      j^{\text{\Cross{}}}y\) and the constraint \(A^{\text{\Cross{}}} y \geq c\).
+      \item We know \(j\) is all zeroes except for the source and sink, so we can rewrite
+      \(j^{\text{\Cross{}}} y\) in the form of \(x_s - x_t\). Multiply this constraint by
+      \(-1\) and it becomes a maximization problem instead, deriving \(\max{x_t - x_s}\).
+      \item We know that every column has to have precisely two extries that aren't 0, and
+      that the two vertices have a corresponding row with \(A^{\text{\Cross{}}}x \geq j\)
+      and a constraint of \(-w(u,v) \leq x_u - x_v\). 
+      \item Further multiplying the above and we get \(x_v - x_u \leq w(u,v)\).
+      \item We can see that the dual program can then be described as \(x_t - x_s\) and
+      \(x_v - x_u \leq w(u,v) \forall (u,v) \in E\), because there is only a single row
+      for each edge. 
+      \item Thus we have also demonstrated the ``lifting the handkerchief'' intuition for
+      single-source shortest path algorithms for non-negatively weighted graphs because
+      the time between two points off the surface is bounded from the top by the weight of
+      the edge between each point. This might decrease the upper bound of time until an
+      adjacent point is itself lifted off the surface. 
+      \item Imagine we let \(x_s = 0\) and
+      lifted it, because we are maximizing about the constraint \(x_t - x_s\), \(x_s\)
+      must keep going up and increasing the height of all other \(x_i\) and will be equal
+      to the time thats passed since we lifted \(x_s\).
+      \item When we reach \(w(q,s) = x_q - x_a\), let \(x_q = w(q,s)\) and then lift it
+      from the surface. Keep executing this process until we finally lift the sink \(x_t\)
+      from the surface, and we can then use all the \(x_y\) we previously lifted to find
+      the vertex that satisfies the constraint that \(w(q,y) = x_q - x_y \).
+\end{enumerate}
+\end{proof}
+
+
+\end{document}

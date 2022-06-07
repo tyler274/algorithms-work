@@ -1,0 +1,355 @@
+% preamble
+\documentclass{article}
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\setlength{\headheight}{12pt}
+\usepackage[headsep=1cm,total={6.5in, 8.5in}]{geometry}
+
+% useful packages
+\usepackage{amsmath,amssymb, amsthm}
+
+% add your own packages here
+\usepackage{verbatim}
+
+% commands for header, fill in the appropriate values
+\newcommand{\codename}	{Snoop Matroidd} % type name here
+\newcommand{\settitle}	{Problem Set 1} %type set title here (ex. Problem Set 3, Midterm)
+\newcommand{\latesub}	{No} % type yes/no indicating late submission
+
+% a few helpful commands 
+\newcommand{\RR}{\mathbb{R}} % typing \RR prints the Blackboard R used for Real Numbers
+\newcommand{\NN}{\mathbb{N}} % typing \NN prints the Blackboard N used for Natural Numbers
+\newcommand{\ZZ}{\mathbb{Z}} % typing \ZZ prints the Blackboard Z used for Integers
+
+% construct your own commands here
+
+\newcommand{\GCD}{\textrm{GCD}}
+
+
+% commands for header, don't adjust
+\begin{document}
+\thispagestyle{empty}
+\begin{center}\framebox{\vbox{ \vspace{2mm}
+                  \hbox to 6.5in {\textbf{CS~38~~~Algorithms}\hfill \textbf{\today}} \vspace{4mm}
+                  \hbox to 6.5in {\Large \hfill \settitle  \hfill} \vspace{2mm}
+                  \hbox to 6.5in {\textbf{Codename: } \codename \hfill \textbf{Late Submission: } \latesub} \vspace{2mm}}
+      }
+\end{center} \vspace*{1mm}
+\pagestyle{fancy}\lhead{Codename: \codename} \chead{\settitle} \rhead{\today}
+
+% insert solution here
+\section{Problem 1}
+Collaborated with: No one.
+
+\subsection{Part A}
+\begin{proof}
+
+      \begin{enumerate}
+            \item We can construct some set of functions $f$ and $g$ that are piece wise
+                  functions $\forall n \in \ZZ^+$. To force the functions to be strictly increasing we will
+                  multiply our input $n$
+                  for all values of n by a $n^(n-1)$ or $n^n$ factor. To differentiate them, multiply
+                  the alternate case by $n^n$ instead. $f(n)$ applies these to one of the two
+                  cases, and $g(n)$ applies it to the other.
+
+            \item \[ f(n) =   \begin{cases}
+                              n^{n+1} & n \in Evens \\
+                              n^n     & n \in Odds
+                        \end{cases}
+                  \]
+                  \[ g(n) =   \begin{cases}
+                              n^n     & n \in Evens \\
+                              n^{n+1} & n \in Odds
+                        \end{cases}
+                  \]
+            \item Each of the above functions is monotonically increasing, each increasing
+                  input over the domain of $n$ always outputs a larger value as $n$ itself
+                  grows. i.e. $f(n) < f(n+1) \forall n$.
+            \item We will show via contradiction that $f\notin O(g)$, assume that $f \in O(g)$.
+            \item For this assumption to hold, there must exist some value $p: f(n) \leq
+                        p*g(n) \forall n \notin {n^*}$ where $n^*$ is some finite set $n^* \in
+                        n$.
+            \item If $n$ is odd than $\frac{f(n)}{g(n)} = \frac{n^{n+1}}{n^n} = n \leq p$.
+            \item Contradiction! There are infinite possible values of an odd $n$ where $p
+                        < n$ that dont satisfy our restrictions.
+            \item $\therefore$ in the odd direction, $f() \notin O(g)$.
+            \item Solving for the evens case is almost exactly the same as the even's case, we assume
+                  that $g \in O(f)$, such that there is some value $p: g(n) \leq
+                        p*f(n) \forall n \notin {n^*}$ where $n^*$ is some finite set $n^* \in
+                        n$. We find there are infinite possible options for $p$ in this domain that
+                  violate our restrictions.
+            \item $\therefore$ in the even direction, $g() \notin O(f)$.
+      \end{enumerate}
+\end{proof}
+
+\subsection{Part B}
+\begin{proof}
+      \begin{enumerate}
+            \item Given that there are finite $k$ functions, there is a corresponding finite
+                  set of positive integer outputs of $f(n)$ that has a determinable maximum
+                  member $\forall n \in Z^+$.
+            \item Since this is a finite set, we can assume there exists some function $g(n)
+                        = MAX({f_i(n),\dots}) : i \in k$.
+            \item $\forall n$, observe that $\forall i, f_i(n) \leq g(n)$.
+            \item $\therefore f_i(n) \in O(g) \forall i$.
+            \item Given that $g' : Z^+ \rightarrow Z^+ : f_i \in O(g') \forall i$, observe
+                  that $f_i(n) > p_i * g'(n) \forall i$ for the finite set of values $n$.
+            \item Assuming that  $p = MAX_i (p_i)$, observe that $p*g'(n) < f_i(n)$ for the
+                  finite set of values $n$, and the cases where the least upper bound doesn't hold shrinks as
+                  $p$ grows.
+            \item Assuming that there are $u_i$ values greater than $p * g'(n) \forall
+                        f_i(n)$, we can observe that $g(n) = f_i(n)$ whenever the least upper
+                  bound would be
+                  broken in the most egrigeous situations.
+            \item $\therefore$ there are $ k * MAX_i (u_i)$ points where the least upper bound is broken at
+                  most.
+            \item Since the values of both parts of the bound breaking points are
+                  finite, the product of the two is also finite, $\therefore g \in O(g')$.
+
+      \end{enumerate}
+\end{proof}
+
+\subsection{Part C}
+\begin{proof}
+
+      \begin{enumerate}
+            \item To prove this we will construct such a function $g(n) = MAX_{j \leq
+                                    n}(f_j(n))$, observe this function is well defined over the domain of $n$.
+            \item Refering to the definition of Multivariate Big O Notation (TA Notes 2.1.6),
+                  observe that $f_i(n) \leq g(n) \forall i < n$.
+            \item $\therefore f_i \in O(g)$ if the first value of $n$, $n_0$ is set equal to
+                  $i$ by definition 2.1.6.
+      \end{enumerate}
+\end{proof}
+
+\newpage
+\section{Problem 2}
+Collaborated with: No one.
+
+\subsection{Algorithm}
+
+\paragraph{\indent} We can show that there exists an algorithm for every context free grammar
+in the given form that is able to determine membership in that language
+in time proportional to $O(n^3)$ by constructing such an algorithm and
+demonstrating its running time. This algorithm
+operates by determining if a substring $u_i$ of our input string $u$
+is in the given language $L$ we are checking recognition for,
+and by concatenating said valid substrings we can build back up to checking
+whether $w$ itself is in the language without needing to re-check our prior work. This is
+a form of dynamic programming that uses a 2D table $Tab$ that has dimensions $n$ by $n$.
+Entry $Tab[x,y]$ will contain every non-terminal variable that generates a substring of our input string
+$u$ that begins at index $x$ and has a length of $y$, indexing from 1. If the input string
+has length equal to 0 than we short circuit a solution for that.
+
+\begin{enumerate}
+      \item For $x \in 1\ldots n$:
+            \subitem Look up entry $Tab[x, 1]$ and insert the set of non terminal characters ($A$)
+            that have an associated rule that directs them to the terminal character $u_x$.
+      \item For $y \in 2\ldots n$:
+            \subitem For $x \in 1\ldots(n-y+1)$:
+            \subsubitem For $z \in 1\ldots y-1$:
+            \subsubitem \hspace*{6mm} For each variable $B \in Tab[x, z]$ and $C \in
+                  Tab[x+z, y-z]$, locate all rules of the form $A \rightarrow BC$ and append
+            the variable $A$ to the set of values in the DP table at $Tab[x,z]$.
+      \item If the input string's length is 0, such that $u=\epsilon$, see if $S \rightarrow
+                  \epsilon \in R$ and return True if and only if it is in the set $R$, and
+            return False if it is not.
+      \item If the input string's length is not 0 such that $u \neq \epsilon$ then if $S \in
+                  Tab[1, n]$ return True. Return False if its not.
+\end{enumerate}
+
+\subsection{Proof of Complexity}
+
+\begin{proof}:
+
+      \begin{enumerate}
+
+            \item
+                  The first loop initialized the DP table $Tab$ and runs $n$ times in the length of the string.
+            \item
+                  There is a constant number of
+                  non-terminals rules in $R$ of the (i. $A\rightarrow BC$) form.
+            \item Thus the initial loop runs in O(n).
+            \item
+                  There are three nested loops that each run in the worst case $n$ times
+                  as well.
+            \item
+                  The innermost loop's work runs in constant time over the domain of the
+                  variables.
+            \item Steps 2 of the algorithm thus run in $O(n^3)$.
+            \item Steps 3-4 of the algorithm each run in constant time.
+            \item
+                  We thus have an algorithm that determines membership in any language with the form of $L$
+                  in $O(n + n^3 + c)$ time which can be simplified to $O(n^3)$.
+      \end{enumerate}
+\end{proof}
+
+\subsection{Proof of Correctness}
+\begin{proof}
+      This is a parse tree that proves the base case (substring) and then
+      builds up the wider parsing tree off our base case derived from the set of Rules
+      provided by the CFL. By Induction we will see
+      that the algorithm correctly determines recognition by the language.
+      \begin{enumerate}
+            \item Base Case: (sub)strings of length $y=1$.
+                  \subitem The (sub)string has to be the product of one of the rules $\in R$,
+                  such that the substring $u_i$ is the terminal of one of the rules with the
+                  form of $A\rightarrow u_i$.
+                  \subitem Thus by construction, so long as the Alphabet remains the same as
+                  the CFL for all $u$, we can observe that the values we insert into the row
+                  $y=1$ is valid for the CFL.
+            \item Induction step: for substrings of lengths $y>1$
+                  \subitem Each step of the algorithm only depends on rows that have already
+                  been filled in, starting at the base case that we proved is correct.
+                  \begin{enumerate}
+                        \item Each substring $v$ of the stated length needs to have been
+                              generated by a rule $\in R$ that has the form $A\rightarrow BC$,
+                              in which sub strings B and generate the component substrings of $b
+                                    = b_1 b_2$.
+                        \item In the middle loop of our algorithm (For $z \in 1\ldots y-1$), the
+                              algo generates entries for every way we could split the sub string $v$
+                              into its two component pieces.
+                        \item By definition the substrings must
+                              have a length smaller than $y$, and the innermost loop of the
+                              algorithm will find every rule that could generate the substring
+                              and enter it into $Tab$.
+                        \item Based on our induction, each row in the table $y$ is correct, as
+                              it will contain the substring of the input $u$ begging at index
+                              $x$ and possessing length $y$.
+                  \end{enumerate}
+            \item The case of length equal to 0, or the empty string $\epsilon$ is handled by
+                  the definition of the language.
+            \item Using the above proof of correctness on induction that the table has
+                  been generated correctly, we know that the item in the table at $Tab[n,1]$
+                  contains the set of all possible variables that generate the string itself.
+                  If the starting symbol $S$ is in the set found in this entry in the table,
+                  then the input string $u$ is one that is produced by the CFG, and the
+                  algorithm should return True.
+            \item If the starting symbol $S$ is not in the set of variables in $Tab[n,1]$,
+                  then the input string $u$ must not be in the language, as that set contains all
+                  valid variables that generate the string. Thus the algorithm will return
+                  False in that case.
+      \end{enumerate}
+
+\end{proof}
+
+\newpage
+\section{Problem 3}
+Collaborated with: no-collab
+
+\subsection{Algorithm}
+\paragraph{\indent}
+We will construct a DP table $Tab[u,v]$ with dimensions $(m + 1)$ times $(n + 1)$.Each
+entry in the table stores the length of the SCS of the strings $a_u =
+      (a_1,a_2,\ldots,a_u)$ and $b_v = (b_1,b_2,\ldots,b_v)$ (corresponding to the input strings
+x and y). The variable $Z$ is string that will
+represent the current instance of the SCS for input strings $x$ and $y$.
+Call this function $SCS(x,y)$.
+\begin{enumerate}
+      \item For $u \in 0\ldots m$:
+            \begin{enumerate}
+                  \item For $v \in 0\ldots n$:
+                        \begin{enumerate}
+                              \item If $u=0$, insert $v$ into the DP table at $Tab[u,v]$.
+                              \item Else If $v=0$, insert $u$ into the DP table at $Tab[u,v]$.
+                              \item Else If $a_u$[u] = $b_v$[v], insert $Tab[u-1, v-1] + 1$
+                                    into the DP table at $Tab[u,v]$.
+                              \item Else, insert $($MIN$(Tab[u-1,v], Tab[u, v-1]) + 1)$ into the
+                                    DP table at $Tab[u,v]$. Where MIN() is a function that
+                                    returns the minimum of its two input values.
+                        \end{enumerate}
+            \end{enumerate}
+      \item Set $Z$ to the empty string $\epsilon$.
+      \item Set $u$ to $m$.
+      \item Set $v$ to $n$.
+      \item Loop the following while $u>0$ \&\& $v>0$.
+            \begin{enumerate}
+                  \item If $x[u]$ == $y[v]$, insert $x[u]$ into the front of the string
+                        $Z$, decrement $u$ by 1, and decrement $v$ by 1.
+                  \item Else If SCS$(a_u, b_{v-1}) < $SCS$(a_{u-1}, b_v)$, insert $y[v]$
+                        into the front of $Z$, and decrement $v$ by 1.
+                  \item Else, Insert $x[i]$ into the front of $Z$, and decrement $u$ by 1.
+            \end{enumerate}
+      \item If $u = 0$, then insert $x[0..u]$ into the front of string $Z$.
+      \item If $v = 0$, then insert $y[0..v]$ into the front of string $Z$.
+      \item The SCS is now stored in variable $Z$, and its length in the DP table entry at
+            $Tab[m,n]$.
+\end{enumerate}
+
+\subsection{Proof of Complexity}
+\begin{proof}
+      \begin{enumerate}
+            \item The DP table $Tab$ is populated in $O(m*n)$ iterations each of which
+                  runs in constant time.
+            \item The backtracing calculation of the SCS using this has a worst case time
+                  complexity of $O(m+n)$, in the case where both strings must be iterated
+                  through.
+            \item The runtime complexity is thus dominated by the $O(m*n)$ component,
+                  which thus represents the overall runtime complexity.
+      \end{enumerate}
+
+
+\end{proof}
+
+\subsection{Proof of Correctness}
+\begin{proof}
+      We will prove that this algorithm is correct using induction, more specifically that
+      each entry in our DP table has the length of the SCS of the substrings of the two
+      input strings.
+      \begin{enumerate}
+            \item Base Case(s): $u = 0$ OR $v = 0$
+                  \begin{enumerate}
+                        \item If either string is empty, then the SCS is trivially the
+                              other input string, and thus the correct length of the SCS
+                              is inserted.
+                  \end{enumerate}
+            \item Inductive Step:
+                  \begin{enumerate}
+                        \item For substrings with length $u,v \in \ZZ^+$, we may make the
+                              inductive assumption that the table has been correctly
+                              populated with the SCS lengths of the substring pairs, as
+                              they would have been filled in during the processing of
+                              strings $a_u$ and $b_v$:
+                              \begin{enumerate}
+                                    \item $(a_{u-1}, b_{v-1})$
+                                    \item $(a_u,b_{v-1})$
+                                    \item $(a_{u-1},b_v)$
+                              \end{enumerate}
+                        \item In the case of both strings ending in the same character we can reduce the problem of finding the SCS of the sub
+                              strings $a$ and $b$ by observing that the SCS of the two
+                              strings must contain the final letter of both strings if the two strings both end in that leter, and that the
+                              smallest common supersequence must have that character as
+                              the final character in the sequence. The SCS is thus finding
+                              the SCS of the parts of the (sub)strings before that final
+                              common character. If our inductive assumption holds true as
+                              we assume, then the size of the SCS for the DP table entry
+                              at $Tab[u-1,v-1]$ would have been correctly set, and we thus
+                              derive the correct length and content of the SCS.
+                        \item In the case that the last character of each (sub)string are
+                              not the same, we can observe that the SCS must contain the last
+                              character of one of the input strings as the SCS' last
+                              character. The SCS string before that character will be the
+                              other (sub)string. Via induction the SCS for both possible
+                              branches has already been set, and we can thus derive the
+                              correct value of the SCS and its length to populate the
+                              entry in the DP Table.
+                        \item Thus every substring case has been populated correctly in
+                              the DP table, and the correct length of the SCS has been set in
+                              $Tab[m,n]$.
+                        \item We can observe that the backtracing algorithm for the SCS
+                              generates the correct sequence by noting that the insertion of
+                              characters into the front of the string $Z$ generates a super
+                              seuqence as it includes each member of both of the inputs string $x$ and
+                              string $y$.
+                        \item As $Z$ is generated by following the table it's
+                              length is guranteed to match the value found in the DP table
+                              entry at $Tab[m,n]$, which we already proved will be correct
+                              previously.
+                  \end{enumerate}
+      \end{enumerate}
+
+
+\end{proof}
+
+\end{document}
+

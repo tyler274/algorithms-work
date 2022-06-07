@@ -1,0 +1,371 @@
+% preamble
+\documentclass{article}
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\setlength{\headheight}{12pt}
+\usepackage[headsep=1cm,total={6.5in, 8.5in}]{geometry}
+
+% useful packages
+\usepackage{amsmath,amssymb, amsthm}
+
+% add your own packages here
+\usepackage{verbatim}
+
+
+% commands for header, fill in the appropriate values
+\newcommand{\codename}	{Snoop Matroidd} % type name here
+\newcommand{\settitle}	{Problem Set 3} %type set title here (ex. Problem Set 3, Midterm)
+\newcommand{\latesub}	{No} % type yes/no indicating late submission
+
+% a few helpful commands 
+\newcommand{\RR}{\mathbb{R}} % typing \RR prints the Blackboard R used for Real Numbers
+\newcommand{\NN}{\mathbb{N}} % typing \NN prints the Blackboard N used for Natural Numbers
+\newcommand{\ZZ}{\mathbb{Z}} % typing \ZZ prints the Blackboard Z used for Integers
+
+% construct your own commands here
+
+\newcommand{\GCD}{\textrm{GCD}}
+
+
+% commands for header, don't adjust
+\begin{document}
+\thispagestyle{empty}
+\begin{center}
+      \framebox[6.5in]{
+            \vbox{
+                  \vspace{2mm}
+                  \makebox[6.3in][l]{\textbf{CS~38~~~Algorithms}\hfill \textbf{\today}}
+                  \vspace{4mm}
+                  \makebox[6.5in][c] {\Large \hfill \settitle{\hfill}}
+                  \vspace{2mm}
+                  \makebox[6.3in][l] {\textbf{Codename: } \codename{ \hfill \textbf{Late Submission:}
+                              \latesub}}
+                  \vspace{2mm}
+            }
+      }
+\end{center}
+\vspace*{1mm}
+\pagestyle{fancy}\lhead{Codename: \codename} \chead{\settitle}
+\rhead{\today}
+
+% insert solution here
+\section{Problem 1 (6 points)}
+Collaborated with: No One
+
+\subsection{Proposition}
+\paragraph{\indent}
+Fix any nonzero complex number \(z\). Engineers working in audio signal processing
+invented the chirp z-transform, in which an input vector \((x_0,\dots, x_{n-1})\) is
+transformed into the vector \(y = (y_0,\dots, y_{n-1})\) defined by
+\[ y_j = \sum_{i=0}^{n-1} x_i z^{ij} \] (In the special case that \(z\) is a primitive
+\(n\)th root of unity, this is the Fourier transform over \(\ZZ /n \), but here we
+consider the more general case.)
+
+\paragraph{\indent}
+Show how to compute the chirp transform in time \(O(n \log{n})\). You may assume that
+arithmetic operations \((+/-/ \times)\) on complex numbers take unit time.
+
+\paragraph{}
+Hint: use the identity
+\[ij - j^2 / 2 = i^2 / 2 - {(j - i)}^2 / 2\] to rewrite Eqn. (1) to yield an expression
+for the function \(y_{j}z^{-j^{2}/2}\) as a convolution of two functions. You will need to
+be careful about indexing.
+\subsection{Algorithm}
+\begin{enumerate}
+      \item \(y_j = \sum_{i=0}^{n-1}x_i z^{ij} \) We start with the given summation
+      \item \(y_j = z^{-j^2/2} \sum_{i=0}^{n-1}x_i z^{{(i+j)}^2 /2} z^{-i^2 /2}\) Rewrite
+            the given sum using the identity given in the hint.
+      \item Let \(2^N\) be the smallest power of \(2\) that is greater than \(2n\).
+      \item Let \(a_i \leftarrow x_i z^{-i^2 /2}\), \(x_i = 0\) when \(i \geq n\).
+      \item Let \(b_i \leftarrow z^{{(2n-2-i)}^2 /2}\).
+      \item Use the Convolution Theory\footnote{4.9 TA Notes on Arithmetic \& FFT, page 2 Convolution} to
+            solve \(c_f = \sum_{k=0}^{f} a_k b_{f-k}\) where \(f=2n-2-j\) and \(0 \leq j
+            < n\), this will use three FFTs of order \(2^N\) as shown in the TA
+            Notes\footnote{4.15.2 TA Notes on Arithmetic \& FFT}.
+      \item The \(O(n\log{n})\) convolution algorithm thus solves the chirp transform in
+            time \(O(n\log{n})\) as well.
+\end{enumerate}
+
+\subsection{Proof of Correctness}
+\begin{proof}
+      \begin{enumerate}
+            \item We will prove this algorithm is correct using induction.
+            \item Base case:
+                  \begin{proof}
+                        \begin{enumerate}
+                              \item For the base case of \(n=1\) the algorithm is \(y_j =
+                                    \sum_{i=0}^{1-1 =0} x_i z^{ij}\) which simplifies to \(y_j = x_0
+                                    z^{0*j} = x_0\).
+                              \item This is the definition of convolution that we were
+                                    given for the convolution operation on two functions.
+                              \item Thus we have a valid base case that returns the convolution
+                                    around \(n=1\).
+                        \end{enumerate}
+                  \end{proof}
+            \item Induction case:
+                  \begin{proof}
+                        \begin{enumerate}
+                              \item For the \(n\)'th case we use the identity in the algorithm to
+                                    rewrite the transform as a convolution using FFTs, which we proved in the TA
+                                    notes to be a correct may of doing polynomial multiplication.
+                        \end{enumerate}
+                  \end{proof}
+      \end{enumerate}
+\end{proof}
+
+\subsection{Proof of Complexity}
+\begin{proof}
+      \begin{enumerate}
+            \item As we reformulated the chirp transform into a constant numbers of
+                  convolutions, and we know that convolutions can be done in \(O(n \log n)\)
+                  we can conclude that the given chirp transform algorithm must also run in
+                  \(O(n \log n)\) time as each step run in \(O(\log n)\), \(O(n \log n)\) and
+                  constant time, and thus the \(O(n \log n)\) dominates and bounds the runtime.
+      \end{enumerate}
+\end{proof}
+
+\newpage
+\section{Problem 2 (6 points)}
+Collaborated with: No-collab
+
+\subsection{Proposition}
+
+\paragraph{\indent}
+In this problem you may assume that basic arithmetic operations on reals take unit time.
+You are given \(n\) real numbers \(c_1, \dots, c_n\). You wish to compute (i.e., obtain the
+coefficients of) the polynomial \((x - c_1)(x - c_2)\dots(x - c_n)\).
+
+\paragraph{\indent}
+Describe an \(O(n \log^2 n)\) time algorithm for this problem.
+
+\subsection{Algorithm}
+
+\begin{enumerate}
+      \item Use the general Divide and Conquer\footnote{TA Notes 4.2.1 Divide and Conquer}
+            method to build a recursive algorithm that returns the coefficients in a
+            way similar to the partitioning done in the demonstrated Mergesort. We can
+            then use that
+            algorithm's recurrence relation to compute the time complexity of this algorithm.
+      \item Compute the coefficients of \(p_0(n) = (x-c_1)(x-c_2)\dots(x-c_{n/2})\) by
+            recursively calling this algorithm for smaller sections of the polynomial.
+      \item Calculate the the coefficients of a second polynomial \(p_1(n)=(x-c_{\frac{n}{2}
+            + 1})(x-c_{\frac{n}{2} + 2})\dots(x-c_{n})\) by also recursively calling this
+            algorithm.
+      \item Use the FFT as a fast way to compute polynomial multiplication as in the TA Notes\(^1\) to
+            calculate \( p{(n)} = p_0{(n)} p_1{(n)} \) and return \(p(n)\).
+
+\end{enumerate}
+
+\subsection{Proof of Correctness}
+\begin{proof}
+      \begin{enumerate}
+            \item We will use induction to prove this correct for the cases \(1 \leq n\).
+            \item Base case:
+                  \begin{proof} \(1 \leq n\)
+                        \begin{enumerate}
+                              \item Compute \(z - c_1\), this is by inspection valid.
+                        \end{enumerate}
+                  \end{proof}
+            \item Induction case:
+                  \begin{proof} Compute the case for \(1 < n\) constants.
+                        \begin{enumerate}
+                              \item The polynomials defined by the set of computations on
+                                    the constants \(c\)are each of the form \(x -
+                                    c_i \forall 1 < i \leq n \).
+                              \item We demonstrated that each individual polynomial is
+                                    computed correctly within our base case, and should also be
+                                    proved correct for each individual polynomial for each
+                                    increasing constant up to \((x - c_{n_1})\).
+                              \item To compute the final polynomial \(p(n)\) we need to
+                                    compite \(p_0(n) \) and \(p_1(n)\) and get the final
+                                    polynomial we use the FFT Divide and Conquer algorithm
+                                    the TA Notes\footnote{TA Notes 4.15.2}.
+                              \item The sub-algorithm we used was proven to be correct in
+                                    the notes, therefor our algorithm build upon it is
+                                    also correct.
+
+                        \end{enumerate}
+                  \end{proof}
+      \end{enumerate}
+\end{proof}
+
+\subsection{Proof of Complexity}
+\begin{proof}
+      \begin{enumerate}
+            \item We can see that this algorithm has a recurrence relation of the form
+                  \(T{(n)}=2T{(\frac{n}{2})} + O{(n \log n)}\) as, at each level for some
+                  \(n\), the algorithm performs 2 recursions over inputs each half the size of
+                  \(n\), and then a single FFT for the multiplication of order \(n\) that has
+                  running time \(O{(n \log n)}\) as shown in the TA Notes\(^1\).
+            \item This recurrence relation can be solved using a modification of the Master
+                  Method\footnote{Theorem 4.3.1 TA Notes on Recurrence Relations} as it is of
+                  the form of (eq 2.1)\footnote{eq 4.3.1 TA Notes Solving Recurrence Relations}
+                  \(T(n) = a \cdot T(\frac{n}{b}) + f(n)\) where \(a=2\) is 2 as we have 2
+                  subproblems at each level, and \(b=2\), the ratio of the size of said
+                  subproblems is 2. \(f(n)\) is the FFT that performs the polynomial
+                  multiplication step in \(O{(n \log n)}^1\) that merges our results together.
+            \item Plugging in our values for \(a\) and \(b\) we find that the second case of
+                  the master theorem modulo some tweaks we need to prove solves this relation.
+            \item Generalizing the simplification used in the TA Notes, we introduce \(m(n) =
+                  O(n^{\log_{b} a} \log_{b}^{v} n)\) with some \(v\geq 0\) that is analogus to
+                  the second case of the master theorem when \(v=0\) (as the simplification in
+                  the TA notes does).
+                  \subitem\begin{proof}[First Lemma: if \(n = b^s\) for some \(s\)]
+                        \begin{enumerate}
+                              \item Construct some function \(h(n)=\sum_{i=0}^{\log_b n-1} a^i
+                                    w(\frac{n}{b^i}) \), \(w(n)=n^{\log_{b} a} \log_{b}^{v+1} n\)
+                              \item Substitute \(w(n)\) into \(h(n)\) and we find that
+                                    \[h(n)=n^{\log_b a} \log_b^v n \sum_{i=0}^{\log_b
+                                          n-1}{(\frac{a}{b^{\log_b a}})}^i = n^{\log_b a}
+                                          \log_b^{v+1} n\]
+                              \item If \(n=b^s\) then sub in for \(n\) and \(b=2\) in the
+                                    recurrence relation and we get \(T(2^s) = 2T(2^{s-1}) + 2^s
+                                    \log_2 2^s = 2T(2^{s-1}) + s \cdot 2^{s}\).
+                              \item Let \(q(s) = T(2^s)\) and rewrite our recurrence relation as
+                                    \[q(s) = 2q(s-1) + s2^s\]
+                                    \[= 2(2q(s-2) + (s-1)2^{s-1}) + s2^s\]
+                                    \[= 4q(s-2) + 2^s (s-1) + s2^s \]
+                                    \[= 4(2q(s-3) + 2^{s-2} (s-2)) + 2^s (s-1) + s2^s\]
+                                    \[= 8q(s-3) + 2^s (s-2) + 2^s (s-1) + s2^s\]
+                                    \[q(s) = 2^s q(0) + 2^s (1+2+\cdots+s)= 2^s q(0) +
+                                          2^s\frac{s(s+1)}{2}\]
+                                    \[q(s)= 2^s q(0) + s2^{s-1}(s+1)\]
+                              \item Taking the above recurrence and a base case \(T(1)=O(1)\) per
+                                    the given, we can tranform the recurrence relation into \(T(n)
+                                    = O(n^{\log_b a}) + \sum_{i=0}^{\log_b n-1} a^i
+                                    h(\frac{n}{b^i})\) by induction.
+                        \end{enumerate}
+                  \end{proof}
+            \item Substitute \(h(n) = O(n^{\log_b a} \log_b^v n)\) and use the First Lemma to
+                  see that we can rewrite \(T(n) = O(n^{\log_b a} \log_b^{v+1} n)\)
+            \item Now we substitute our new \(T(n)\) back in and get \(T(n) = O(n \log^2 n)\).
+      \end{enumerate}
+\end{proof}
+
+\newpage
+
+\section{Problem 3 (6 points)}
+Collaborated with: No One
+
+\subsection{Proposition}
+
+\paragraph{\indent}
+Recall that a permutation \(\pi = (\pi_1,\ldots,\pi_n)\) is an ordered list of the numbers
+\( \{1, \ldots , n\} \). We often use a permutation to represent a person’s preference
+list among a set of items labeled \(1, \ldots, n\). That is, if Alice’s list is (2, 3, 1,
+4) it means item 2 is her favorite, 3 is next, etc. With this in mind, it is often useful
+to quantify how similar two peoples’ lists are. We can always relabel the items so that
+the first person’s list is \((1, \ldots , n)\), and then we look at the permutation \(\pi
+\) held by the second person after the relabeling. One measure of similarity of the
+preference lists is their inversion or Kendall distance,
+
+\[k(\pi) = |\{ 1 \leq i < j \leq n: \pi(i) > \pi(j) \}| \]
+
+\paragraph{\indent}
+As you can see this is 0 if the two permutations are identical, and can be as large as
+\(\binom{n}{2}\). You should convince yourself that \(k\) is indeed a metric on
+permutations.
+
+\paragraph{\indent}
+In this exercise you are to show that there is an \(O(n \log n)\) time algorithm (in the
+word model) to compute \(k\).
+
+\paragraph{\indent}
+Hint: Distinguish the case \(i \leq n/2 < j\) from the case
+that either \(i, j \leq \frac{n}{2}\) or \(i, j > \frac{n}{2}\). Design a recursive
+algorithm based upon mergesort
+
+
+\subsection{Algorithm}
+
+\paragraph{\indent}
+Following the hint I will construct a recursive algorithm based upon mergesort that uses
+our divide and conquer techniques to process the list in \(O(n \log n)\).
+First we will divide the list into two parts, and then we will recursively calculate the
+Kendall distance in each half of the list.
+\paragraph{\indent}
+We need to combine our results, so we count the inversions where \(\pi_i\) and \(\pi_j\)
+are in different halfs of the list, and then return the sum of the three relevant values.
+Recursively solving the halfs introduces a \(2T(n/2)\) recurrence relation, suggesting the
+master theory will come up. \(T(n) \leq T(\lceil \frac{n}{2} \rceil) + T(\lfloor \frac{n}{2}\rfloor)
++ O(n)\)
+as counting and merging at each step is an \(O(n)\) operation.
+\begin{enumerate}
+      \item Given a sorted list of numbers corresponding to the preference, if the list has
+            only a length of 1 (\(n=1\)), return a tuple of \((0, Z)\), 0 for the inversion
+            count, and where \(Z \) is the
+            list input to this instance of the algorithm.
+      \item Divide the list into two halves \(X\) and \(Y\) (this is \(O(1)\)).
+      \item Recurse on this algorithm with an input of \(X\), save the tuple result as
+            \(C_x\) and \(X\).
+      \item Recurse on this algorithm with an input of \(Y\), save the tuple result as
+            \(C_y\) and \(Y\).
+      \item After the recursions on \(X\) and \(Y\) have completed, perform a modified mergesort.
+      \item We assume, at this point, that each half-list is sorted, and we now move through
+            the list counting each inversion of the list where \(\pi_i\) and \(\pi_j\) are
+            not in the same half of the list and recording it as \(C_z\), merging the lists
+            as we go and storing the counted and mergedsorted resulting list in \(Z'\), then we save the
+            sum of inversions in the left \(C_x\), right \(C_y\) and the inversions in the
+            current list make up \(C_z\) as \(C_n\).
+      \item As we scan \(X\) and \(Y\) from head to tail, we compare each \(x_i\) and
+            \(y_j\), if \(x_i < y_j\) then \(x_i\) is not inverted with anything in \(Y\)
+            (because they are sorted). If \(x_i > y_j\), then \(y_j\) is inverted with each
+            and every item in \(X\) (again because the lists were already sorted). Append
+            each element that is smaller (inverted) to the sorted return list \(Z'\).
+      \item Finally return the tuple of
+            (\(C_n, Z'\)).
+
+\end{enumerate}
+
+\subsection{Proof of Correctness}
+\begin{proof}
+      \begin{enumerate}
+            \item We will prove this algorithm is correct using induction.
+            \item Base case:
+                  \begin{proof}
+                        \begin{enumerate}
+                              \item Citing the TA proof for Mergesort\footnote{TA Notes Divide and Conquer 4.1.1
+                                    } to validate our base case and useage of the sorting
+                                    algorithm.
+                              \item in the base case \(n=1\) then there are no inversions and we
+                                    return 0.
+                        \end{enumerate}
+                  \end{proof}
+            \item Induction case:
+                  \begin{proof}
+                        \begin{enumerate}
+                              \item For \(n>1\) we want to prove the algorithm returns the sorted
+                                    array, and provides the correct count of inversions.
+                              \item Instead of just returning the sorted list, we tweak the
+                                    mergesort algorithm to also return the number of incorrectly sorted
+                                    elements which is the number of inversions we want to count.
+                              \item Our modification doesn't change the invariants of the problem,
+                                    or the correctness of the merge sort algorithm as proven in
+                                    the notes.
+                              \item Thus, as our mergesort algorithm is correct, and by the
+                                    invariants of the problem the lists must remain sorted, such that
+                                    any change on the part of mergesort is an inversion, which is
+                                    tracked by simply incrementing a counter and returning it, we
+                                    have proven the correctness of this algoritm for finding the
+                                    Kendall distance for a list of some \(n\) elements.
+                        \end{enumerate}
+                  \end{proof}
+      \end{enumerate}
+\end{proof}
+
+\subsection{Proof of Complexity}
+\begin{proof}
+      \begin{enumerate}
+            \item The algorithm that we have shown has a recurrence relation with one base case for
+                  \(T(1)=O(1)\) iff n=1, and \(T(n) \leq T(\lceil \frac{n}{2} \rceil) + T(\lfloor
+                  \frac{n}{2}\rfloor)
+                  + O(n)\)
+            \item We can thus solve this recurrence relation with the Generalized Master Theorem with \(a=2, b=2, f(n) =
+                  O(n)\), solving \[n^{\log_b a} = n^{\log_2 2} = n \] which is case 2 of
+                  the Generalized
+                  Master Theorem, and thus we can conclude \(T(n) \in O(n \log n)\)
+      \end{enumerate}
+\end{proof}
+
+\end{document}
+
